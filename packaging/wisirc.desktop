@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=wisirc
+GenericName=IRC Client
+Comment=Terminal IRC client with mouse, menus and a live dashboard
+Exec=wisirc
+Icon=utilities-terminal
+Terminal=true
+Categories=Network;Chat;IRCClient;
+Keywords=irc;chat;

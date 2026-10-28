@@ -1,0 +1,43 @@
+# Maintainer: eddyv73 <19657324+eddyv73@users.noreply.github.com>
+pkgname=wisirc
+pkgver=0.3.3
+pkgrel=1
+pkgdesc='Terminal IRC client with mouse, menus, themes and a live dashboard'
+arch=('x86_64' 'aarch64')
+url='https://github.com/eddyv73/wisirc'
+license=('MIT')
+makedepends=('go')
+optdepends=('libnotify: desktop notifications on mentions'
+            'xclip: copy selections to the clipboard on X11'
+            'wl-clipboard: copy selections to the clipboard on Wayland')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  export GOPATH="$srcdir/gopath"
+  go mod download -modcacherw
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export GOPATH="$srcdir/gopath"
+  export CGO_ENABLED=0
+  export GOFLAGS='-buildmode=pie -trimpath -mod=readonly -modcacherw'
+  go build -ldflags "-X main.Version=v$pkgver" -o wisirc ./cmd/wisirc
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export GOPATH="$srcdir/gopath"
+  CGO_ENABLED=0 go test ./...
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm0755 wisirc "$pkgdir/usr/bin/wisirc"
+  install -Dm0644 docs/wisirc.1 "$pkgdir/usr/share/man/man1/wisirc.1"
+  install -Dm0644 packaging/wisirc.desktop "$pkgdir/usr/share/applications/wisirc.desktop"
+  install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm0644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

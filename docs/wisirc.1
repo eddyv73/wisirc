@@ -1,0 +1,108 @@
+.TH WISIRC 1 "2026-10-28" "wisirc" "User Commands"
+.SH NAME
+wisirc \- terminal IRC client with mouse, menus and a live dashboard
+.SH SYNOPSIS
+.B wisirc
+[\fB\-\-config\fR \fIfile\fR]
+.br
+.B wisirc \-\-version
+.SH DESCRIPTION
+.B wisirc
+is an IRC client for the terminal. It connects to several servers at once
+(TLS and SASL PLAIN), shows them in a sidebar with their channels, a chat
+panel and a nick list, and can be used entirely with the mouse (clicks,
+wheel, context menus) or entirely with the keyboard.
+.PP
+It starts on a dashboard with one card per server: connection state,
+uptime, an animated lag graph, joined channels and unread messages.
+The interface is available in English and Spanish.
+.SH OPTIONS
+.TP
+.BI \-\-config " file"
+Read the configuration from \fIfile\fR instead of
+\fI$XDG_CONFIG_HOME/wisirc/config.toml\fR.
+.TP
+.B \-\-version
+Print the version and exit.
+.SH CONFIGURATION
+Each server is a TOML table:
+.PP
+.nf
+.RS
+[servers.libera]
+  nickname = "alice"
+  server = "irc.libera.chat"
+  port = 6697
+  channels = ["#wisirc"]
+
+  [servers.libera.sasl.plain]
+  username = "alice"
+  password = "secret"
+.RE
+.fi
+.PP
+Other keys: \fBusername\fR, \fBrealname\fR, \fBuse_tls\fR (on by default
+on port 6697), \fBpassword\fR (server or bouncer password),
+\fBdangerously_accept_invalid_certs\fR, \fBautoconnect\fR.
+Servers saved from inside wisirc go to \fIservers.toml\fR and choices made
+in the menus (theme, language, server colors) to \fIprefs.toml\fR, both
+next to the configuration file.
+.SH KEYS
+.TP
+.B F1
+Main menu (also a click on \fB≡\fR).
+.TP
+.B F2
+Dashboard (also a click on the \fBwisirc\fR title).
+.TP
+.B Alt+1..9, Ctrl+N, Ctrl+P
+Switch buffers.
+.TP
+.B Alt+A
+Next buffer with activity, mentions first.
+.TP
+.B PgUp, PgDn
+Scroll the history.
+.TP
+.B Tab
+Complete a nick.
+.TP
+.B Esc
+Close a menu, panel or screen.
+.SH COMMANDS
+.BR /connect " (" /conectar ") \fIname\fR | \fIhost\fR [\fIport\fR] [\fB\-nick\fR \fIn\fR] [\fB\-user\fR \fIu\fR] [\fB\-pass\fR \fIp\fR] [\fB\-sasl\fR \fIuser:pass\fR] [\fB\-join\fR \fI#a,#b\fR] [\fB\-tls\fR|\fB\-notls\fR] [\fB\-insecure\fR] [\fB\-name\fR \fIn\fR]"
+.br
+Without arguments it opens a screen with examples.
+.PP
+.BR /join ", " /part ", " /msg ", " /query ", " /me ", " /nick ", " /whois ", " /topic ", " /kick ", " /ban ", " /mode ", " /quote ", " /close ", " /quit
+.br
+The usual IRC commands.
+.PP
+.BR /theme " (" /tema ") [\fIname\fR], " /lang " (" /idioma ") [\fBen\fR|\fBes\fR], " /panel ", " /help
+.SH FILES
+.TP
+.I ~/.config/wisirc/config.toml
+Configuration written by hand.
+.TP
+.I ~/.config/wisirc/servers.toml
+Servers saved from the Servers screen.
+.TP
+.I ~/.config/wisirc/prefs.toml
+Theme, language and server colors chosen in the menus.
+.TP
+.I ~/.local/share/wisirc/logs/
+One folder per server and buffer, one file per day.
+.SH ENVIRONMENT
+.TP
+.B LANG, LC_MESSAGES, LC_ALL
+Pick the default language (Spanish for es_*, English otherwise).
+.TP
+.B COLORTERM
+\fBtruecolor\fR or \fB24bit\fR forces 24-bit color.
+.TP
+.B XDG_CONFIG_HOME, XDG_DATA_HOME
+Base folders for configuration and logs.
+.SH SEE ALSO
+.BR irssi (1)
+.PP
+https://github.com/eddyv73/wisirc
