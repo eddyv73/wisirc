@@ -1,0 +1,43 @@
+name: release
+
+# Builds the binaries on GitHub and publishes the release when a vX.Y.Z tag
+# is pushed, then installs it on Linux and macOS the way a user does.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: test
+        run: go vet ./... && go test -race ./...
+      - name: build
+        run: make release VERSION="$GITHUB_REF_NAME"
+      - name: checksums
+        run: cd dist && sha256sum wisirc-* >SHA256SUMS && cat SHA256SUMS
+      - name: release notes
+        run: |
+          # this version's CHANGELOG section, then how to install
+          awk -v v="## $GITHUB_REF_NAME" '$0==v{on=1;next} /^## /{on=0} on' CHANGELOG.md >notes.md
+          printf '\nInstall or upgrade:\n\n```sh\ncurl -fsSL https://raw.githubusercontent.com/%s/main/install.sh | sh\n```\n' "$GITHUB_REPOSITORY" >>notes.md
+      - name: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/wisirc-* dist/SHA256SUMS \
+            --title "wisirc $GITHUB_REF_NAME" --notes-file notes.md --verify-tag
+
+  # a release made with the workflow token does not start other workflows,
+  # so the install check is called from here
+  install:
+    needs: publish
+    uses: ./.github/workflows/install.yml

@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.3.5
+
+- Releases are built and published by GitHub Actions when a version tag is
+  pushed, and installed on Linux and macOS right after to check them.
+
+## v0.3.4
+
+- The installer is tested on every release, weekly and when it changes, on
+  Linux (x86-64 and ARM) and macOS: install, upgrade, pinning a version,
+  `--add-to-path`, `--uninstall` and `--source`.
+- The README shows the install steps as a diagram.
+
 ## v0.3.3
 
 - MIT license, Arch Linux (AUR) package, man page, CI on Linux and macOS.

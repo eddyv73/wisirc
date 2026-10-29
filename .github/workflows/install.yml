@@ -6,6 +6,7 @@ name: install
 on:
   release:
     types: [published]
+  workflow_call:
   push:
     branches: [main]
     paths: [install.sh, .github/workflows/install.yml]
