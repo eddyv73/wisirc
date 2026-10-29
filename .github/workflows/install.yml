@@ -31,7 +31,7 @@ jobs:
     if: github.repository == 'eddyv73/wisirc'
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: latest release
         run: echo "TAG=$(gh release view --repo "$REPO" --json tagName -q .tagName)" >>"$GITHUB_ENV"
       - name: install (curl | sh)
@@ -45,8 +45,15 @@ jobs:
           fi
       - name: check the installed binary
         run: |
+          # right after a release GitHub can still point "latest" at the
+          # previous one for a little while; install again until it moves
+          for try in 1 2 3 4 5 6; do
+            ~/.local/bin/wisirc --version | grep -qF "$TAG" && break
+            [ "$try" = 6 ] && { ~/.local/bin/wisirc --version; exit 1; }
+            sleep 20
+            sh install.sh
+          done
           ~/.local/bin/wisirc --version
-          ~/.local/bin/wisirc --version | grep -qF "$TAG"
       - name: run it again (upgrade path)
         run: sh install.sh && ~/.local/bin/wisirc --version | grep -qF "$TAG"
       - name: pin a version
@@ -64,10 +71,10 @@ jobs:
     if: github.repository == 'eddyv73/wisirc'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
       - name: install --source

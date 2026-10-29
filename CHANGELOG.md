@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.6
+
+- The install check waits for GitHub to point "latest" at a new release
+  before testing it; CI actions updated to Node 24.
+
 ## v0.3.5
 
 - Releases are built and published by GitHub Actions when a version tag is
