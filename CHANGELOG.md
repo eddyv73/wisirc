@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.7
+
+- New README: banner, feature grid, the reference folded into sections;
+  the installer diagram is gone.
+
 ## v0.3.6
 
 - The install check waits for GitHub to point "latest" at a new release
