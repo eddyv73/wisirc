@@ -28,6 +28,22 @@ curl -fsSL https://raw.githubusercontent.com/eddyv73/wisirc/main/install.sh | sh
 
 That's it: run `wisirc`. The installer detects your system and CPU, downloads the matching binary from the latest release, verifies it against `SHA256SUMS`, installs it into `~/.local/bin`, adds wisirc to the applications menu on Linux desktops, and tells you the exact line to add if that folder is not in your `PATH`. Running it again upgrades (`v0.3.0 → v0.3.1`). The whole script runs from its last line, so an interrupted download never executes half of it.
 
+```mermaid
+flowchart LR
+  A["curl … | sh"] --> B["detect OS and CPU<br/>darwin/linux · amd64/arm64"]
+  B --> C["download the binary<br/>from the latest release"]
+  C --> D{"SHA256SUMS<br/>matches?"}
+  D -- no --> X["stop, nothing installed"]
+  D -- yes --> E["install to ~/.local/bin"]
+  E --> F["menu entry (Linux desktop)"]
+  F --> G{"on PATH?"}
+  G -- no --> H["print the line to add<br/>or --add-to-path"]
+  G -- yes --> I["run wisirc"]
+  H --> I
+```
+
+Every release is installed this way automatically on Linux (x86-64 and ARM) and macOS, together with upgrading, pinning a version, `--add-to-path`, `--uninstall` and `--source` ([install workflow](.github/workflows/install.yml)).
+
 Options go after `sh -s --`:
 
 ```sh

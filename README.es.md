@@ -28,6 +28,22 @@ curl -fsSL https://raw.githubusercontent.com/eddyv73/wisirc/main/install.sh | sh
 
 Y listo: ejecuta `wisirc`. El instalador detecta tu sistema y tu CPU, descarga el binario que corresponde del último release, lo verifica con `SHA256SUMS`, lo instala en `~/.local/bin`, agrega wisirc al menú de aplicaciones en escritorios Linux y, si esa carpeta no está en tu `PATH`, te dice la línea exacta que hay que agregar. Si lo vuelves a ejecutar, actualiza (`v0.3.0 → v0.3.1`). Todo el script se ejecuta desde su última línea, así que una descarga interrumpida nunca ejecuta la mitad.
 
+```mermaid
+flowchart LR
+  A["curl … | sh"] --> B["detecta sistema y CPU<br/>darwin/linux · amd64/arm64"]
+  B --> C["descarga el binario<br/>del último release"]
+  C --> D{"¿coincide con<br/>SHA256SUMS?"}
+  D -- no --> X["se detiene, no instala nada"]
+  D -- sí --> E["instala en ~/.local/bin"]
+  E --> F["entrada en el menú (escritorio Linux)"]
+  F --> G{"¿está en el PATH?"}
+  G -- no --> H["muestra la línea a agregar<br/>o --add-to-path"]
+  G -- sí --> I["ejecuta wisirc"]
+  H --> I
+```
+
+Cada release se instala así automáticamente en Linux (x86-64 y ARM) y macOS, junto con actualizar, fijar una versión, `--add-to-path`, `--uninstall` y `--source` ([workflow de instalación](.github/workflows/install.yml)).
+
 Las opciones van después de `sh -s --`:
 
 ```sh

@@ -1,0 +1,75 @@
+name: install
+
+# Installs wisirc the way a user does, on every new release and once a week,
+# and checks that upgrading, pinning a version and uninstalling work too.
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [main]
+    paths: [install.sh, .github/workflows/install.yml]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    # only where the releases live, not in clones or forks without them
+    if: github.repository == 'eddyv73/wisirc'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: latest release
+        run: echo "TAG=$(gh release view --repo "$REPO" --json tagName -q .tagName)" >>"$GITHUB_ENV"
+      - name: install (curl | sh)
+        run: |
+          # the real one-liner once the repository is public; the same script
+          # from this checkout while it is private
+          if [ "$(gh api "repos/$REPO" -q .visibility)" = public ]; then
+            curl -fsSL "https://raw.githubusercontent.com/$REPO/main/install.sh" | sh
+          else
+            sh -s <install.sh
+          fi
+      - name: check the installed binary
+        run: |
+          ~/.local/bin/wisirc --version
+          ~/.local/bin/wisirc --version | grep -qF "$TAG"
+      - name: run it again (upgrade path)
+        run: sh install.sh && ~/.local/bin/wisirc --version | grep -qF "$TAG"
+      - name: pin a version
+        run: sh install.sh --version "$TAG" && ~/.local/bin/wisirc --version | grep -qF "$TAG"
+      - name: add to PATH
+        # a prefix that is surely not on the runner's PATH yet
+        run: |
+          export WISIRC_PREFIX="$RUNNER_TEMP/wisirc"
+          SHELL=/bin/bash sh install.sh --add-to-path
+          cat ~/.bashrc ~/.bash_profile 2>/dev/null | grep -qF "$WISIRC_PREFIX/bin"
+      - name: uninstall
+        run: sh install.sh --uninstall && test ! -e ~/.local/bin/wisirc
+
+  source:
+    if: github.repository == 'eddyv73/wisirc'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: install --source
+        run: ./install.sh --source
+      - name: check the built binary
+        run: ~/.local/bin/wisirc --version
