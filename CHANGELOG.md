@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.8
+
+- README redesigned as a landing page: animated banner, a mosaic of six
+  themes, a short tour, and the full reference moved to `docs/guide.md`
+  (`docs/guide.es.md` in Spanish).
+
 ## v0.3.7
 
 - New README: banner, feature grid, the reference folded into sections;

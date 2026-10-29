@@ -57,3 +57,13 @@ themes, theme-papel and spanish, 132×32 for connect. Finally:
 ```sh
 docs/screenshots/tools/render-all.sh $T/out
 ```
+
+## Theme mosaic
+
+`themes-grid.png` is the `#go` chat at 110×24 in six themes (`tokyo-night`,
+`catppuccin-mocha`, `ambar`, `rose-pine`, `papel`, `fosforo`), each started
+fresh with `theme = "<name>"` in `$T/cfg/prefs.toml` (wisirc reads prefs.toml
+next to `--config`). Each capture goes through `ansi2html.py --pad 0 --from
+transparent --to transparent`, is shot at 2x with
+`--default-background-color=00000000`, and the six PNGs are laid out 3×2 on a
+transparent page so the mosaic works on light and dark GitHub.

@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/brand/banner-dark.svg">
-    <img src="docs/brand/banner-light.svg" alt="wisirc: IRC in your terminal" width="760">
+    <img src="docs/brand/banner-light.svg" alt="wisirc: IRC in your terminal" width="820">
   </picture>
 </p>
 
@@ -14,13 +14,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/eddyv73/wisirc?style=flat-square&color=b38cff" alt="MIT license"></a>
 </p>
 
-<p align="center">
-  <a href="#install">Install</a> ·
-  <a href="#features">Features</a> ·
-  <a href="#screenshots">Screenshots</a> ·
-  <a href="#documentation">Documentation</a> ·
-  <a href="README.es.md">Español</a>
-</p>
+<p align="center"><a href="#install">Install</a> · <a href="#features">Features</a> · <a href="#themes">Themes</a> · <a href="#tour">Tour</a> · <a href="docs/guide.md">Guide</a> · <a href="README.es.md">Español</a></p>
 
 <p align="center">
   <img src="docs/screenshots/chat.png" alt="wisirc: servers and channels on the left, the chat in the middle, users on the right and a live status bar" width="900">
@@ -96,6 +90,13 @@ make test
 
 </details>
 
+## Quick start
+
+1. Run `wisirc`. It opens on the dashboard; press **Esc** to go to the chat.
+2. Press **F1** (or click **≡**) for the main menu: connect, servers, themes, language, help.
+3. Connect with `/connect irc.libera.chat -nick yournick -join #linux`, and say **Yes** when wisirc offers to save it.
+4. Switch channels with a click or **Alt+1…9**; right-click anything for its menu.
+
 ## Features
 
 <table>
@@ -157,249 +158,39 @@ One log file per channel and day; opening a channel brings back its recent histo
 </tr>
 </table>
 
-## Quick start
+## Themes
 
-1. Run `wisirc`. It opens on the dashboard; press **Esc** to go to the chat.
-2. Press **F1** (or click **≡**) for the main menu: connect, servers, themes, language, help.
-3. Connect with `/connect irc.libera.chat -nick yournick -join #linux`, and say **Yes** when wisirc offers to save it.
-4. Switch channels with a click or **Alt+1…9**; right-click anything for its menu.
+20 built-in themes, previewed live as you move through the list (≡ → <b>Themes</b> or <code>/theme</code>). All of them keep text at WCAG AA contrast, and each server can have its own color.
 
-## Screenshots
+<p align="center">
+  <img src="docs/screenshots/themes-grid.png" alt="The same chat in six themes: tokyo-night, catppuccin-mocha, ambar, rose-pine, papel and fosforo" width="900">
+</p>
+
+## Tour
 
 <table>
 <tr>
-<td width="50%"><img src="docs/screenshots/dashboard.png" alt="Dashboard"><br><sub><b>Dashboard</b> (F2): live lag graphs, uptime, channels and unread counts per server</sub></td>
-<td width="50%"><img src="docs/screenshots/menu.png" alt="Main menu"><br><sub><b>≡ menu</b> (F1 or click): everything is one click away</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/dashboard.png" alt="Dashboard"><p align="center"><sub><b>Dashboard</b> · live lag, uptime and unread messages per server (F2)</sub></p></td>
+<td width="50%" valign="top"><img src="docs/screenshots/menu.png" alt="Main menu"><p align="center"><sub><b>≡ menu</b> · everything one click away (F1)</sub></p></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/themes.png" alt="Theme picker"><br><sub><b>Themes</b>: arrows preview live (here catppuccin-mocha)</sub></td>
-<td><img src="docs/screenshots/theme-papel.png" alt="papel theme"><br><sub>The light <b>papel</b> theme</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/servers.png" alt="Servers screen"><br><sub><b>≡ → Servers</b>: connect, edit, delete, import from Halloy</sub></td>
-<td><img src="docs/screenshots/server-form.png" alt="Server form"><br><sub>Server form, BNC friendly (<code>user/network</code>)</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/connect.png" alt="Connect screen"><br><sub><code>/connect</code> with ready-to-adapt examples</sub></td>
-<td><img src="docs/screenshots/spanish.png" alt="Spanish interface"><br><sub>Spanish interface (<code>/lang es</code>) and a nick's right-click menu</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/servers.png" alt="Servers screen"><p align="center"><sub><b>Servers</b> · connect, edit, delete or import from Halloy</sub></p></td>
+<td width="50%" valign="top"><img src="docs/screenshots/spanish.png" alt="Spanish interface"><p align="center"><sub><b>Español</b> · the whole UI in Spanish, and a nick's right-click menu</sub></p></td>
 </tr>
 </table>
 
-A 38-second terminal recording is in [`docs/demo.cast`](docs/demo.cast): `asciinema play docs/demo.cast`.
+A 38-second recording is in <a href="docs/demo.cast"><code>docs/demo.cast</code></a> (<code>asciinema play docs/demo.cast</code>).
 
 ## Documentation
 
-`man wisirc` has the short version. Everything else, by topic:
+The <a href="docs/guide.md"><b>guide</b></a> covers everything by topic, and <code>man wisirc</code> has the short version.
 
-<details>
-<summary><b>⌨️ Keyboard shortcuts and commands</b></summary>
-
-| Key | Action |
-|---|---|
-| `F1` | Main menu |
-| `Alt+1..9` | Go to buffer N |
-| `Ctrl+N` / `Ctrl+P` (or `Alt+→` / `Alt+←`) | Next / previous buffer |
-| `Alt+A` | Next buffer with activity (mentions first) |
-| `PgUp` / `PgDn` | Scroll the history |
-| `↑` / `↓` | History of what you typed |
-| `Tab` | Complete nick |
-| `Esc` | Close menu or panel |
-| `Ctrl+C` | Quit |
-
-Commands: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/theme`, `/lang`, `/help`. To send text that starts with `/`, type `//`.
-
-</details>
-
-<details>
-<summary><b>🖱️ Mouse</b></summary>
-
-| Action | Result |
-|---|---|
-| Click **≡** | Main menu (connect, servers, join a channel, logs, theme, language, config, help, quit) |
-| Click a channel in the sidebar | Switches to that channel |
-| Click ▾ / ▸ | Collapses or expands a server |
-| Right-click a server | Connect/Disconnect, Join channel…, Color… |
-| Right-click a channel | Leave (part), Close, Mark as read, View topic |
-| Click (or right-click) a nick | Whois, Private message, Op/Voice, Kick, Ban |
-| Drag over the chat or a help panel | Selects and copies to the clipboard (pbcopy, wl-copy/xclip/xsel; over SSH, OSC 52) |
-| Wheel | Scrolls the history, the sidebar or the nicklist |
-| Drag a `│` border | Changes the width of the sidebar or the nicklist |
-
-</details>
-
-<details>
-<summary><b>🔌 Connecting to a server</b></summary>
-
-`/connect` (or `/conectar`) with no arguments, or ≡ → *Connect to server*, opens a screen with examples. Syntax:
-
-```
-/connect <name>                            server saved in the config
-/connect <host> [port] [options]
-```
-
-| Option | Purpose |
-|---|---|
-| `-nick <nick>` | your nick |
-| `-user <user>` | username (on a BNC/ZNC: `user/network`) |
-| `-pass <password>` | server or BNC password |
-| `-sasl <user:password>` | SASL login |
-| `-join <#a,#b>` | channels to join on connect |
-| `-tls` / `-notls` | force TLS on or off (by default only on port 6697) |
-| `-insecure` | accept invalid certificates |
-| `-name <name>` | name shown in the sidebar |
-
-Examples:
-
-```
-/connect 192.0.2.20 7000 -notls -nick pepe -user pepe/libera -pass myZncPassword
-/connect irc.libera.chat -nick pepe -sasl pepe:myPassword123 -join #linux
-/connect irc.example.org 6667 -nick pepe -pass serverPassword
-```
-
-When the server answers, wisirc asks **Save &lt;name&gt; permanently?** (Y/N or click). If you say yes, it is saved to `~/.config/wisirc/servers.toml` and connects automatically every time you open wisirc.
-
-</details>
-
-<details>
-<summary><b>🗄️ Servers screen</b></summary>
-
-≡ → **Servers** lists every server with its state (● connected, ◌ connecting, ○ disconnected) and where it comes from:
-
-- `servers.toml`: saved by wisirc. Servers are created, edited and deleted from this screen with a form (name, host, port, TLS, invalid certificate, nick, `user/network` username for a BNC, password, SASL, channels and *Connect on startup*).
-- `config.toml`: your hand-written file. *Edit* opens the editor; these servers cannot be deleted from the screen, so your comments are never lost.
-- unsaved: connections made with `/connect`; save them with *Save*.
-
-Buttons: **[+ New]**, **[Edit]**, **[Connect]** / **[Disconnect]**, **[Save]** (unsaved connections only), **[Delete]**, **[Close]** and, when a Halloy config is found, **[Import from Halloy]**.
-
-Keys: ↑/↓ choose · Enter edit · `n` new · `c` connect/disconnect · `s` save · `d` delete (asks for confirmation) · `i` import from Halloy · Esc close. In the form: Tab/↓ next field, Space toggles checkboxes, Enter saves, Esc goes back.
-
-If a name is in both files, `config.toml` wins. With `autoconnect = false` a server stays saved but does not connect on startup.
-
-> In macOS Terminal.app or iTerm2, enable "Use Option as Meta key" so the `Alt` shortcuts work.
-
-</details>
-
-<details>
-<summary><b>📥 Coming from Halloy</b></summary>
-
-If you use [Halloy](https://halloy.chat), wisirc finds its config (`~/Library/Application Support/halloy/config.toml` on macOS, `~/.config/halloy/config.toml` on Linux). In ≡ → **Servers** an **[Import from Halloy]** button appears (or press `i`): it brings in every server you do not have yet, saves them to `servers.toml` and connects them. Names that already exist are left untouched.
-
-Imported fields: nick, username, realname, host, port, TLS (on by default in Halloy), invalid certificates, channels, `password`, `password_file` and SASL PLAIN (also with `password_file`). For security, `password_command` is **not executed**; wisirc warns you so you can enter that password by hand. `nick_password` and SASL EXTERNAL are not supported yet and are reported as well.
-
-The first time you open wisirc without a config, if there is a Halloy install on the machine, it starts straight on that screen.
-
-</details>
-
-<details>
-<summary><b>⚙️ Configuration file</b></summary>
-
-The file lives at `~/.config/wisirc/config.toml` (respects `$XDG_CONFIG_HOME`). To use a different one: `wisirc --config <path>`. An example is created the first time you run wisirc.
-
-```toml
-[servers.examplenet]
-  nickname = "alice"
-  username = "alice"
-  server = "irc.example.net"
-  port = 6697
-  channels = ["#lobby"]
-  dangerously_accept_invalid_certs = true   # only for self-signed certificates
-
-  [servers.examplenet.sasl.plain]
-  username = "alice"
-  password = "hunter2"
-
-[notifications]
-  enabled = true
-
-[theme]
-  name = "oscuro"   # oscuro, claro, nocturno, clasico, alto-contraste, bosque, glaciar, papel, ...
-```
-
-Per-server fields: `nickname`, `username`, `realname`, `server`, `port`, `use_tls` (on by default on port 6697), `channels`, `dangerously_accept_invalid_certs`, `password` (server PASS), `sasl.plain` and `autoconnect`.
-
-</details>
-
-<details>
-<summary><b>🎨 Themes</b></summary>
-
-≡ → **Theme / colors** opens a submenu with the themes; the current one is marked with ●. Moving with ↑/↓ applies the theme live; Enter keeps it, Esc goes back to the previous one. With the mouse, clicking a theme applies it. You can also use `/theme <name>` (or `/tema`), and `/theme` on its own opens the submenu.
-
-Theme names are identifiers and stay the same in both languages (`dark` and `light` are accepted as aliases of `oscuro` and `claro`).
-
-| Theme | Style |
-|---|---|
-| `oscuro` | your terminal's colors (the classic one) |
-| `claro` | for light-background terminals |
-| `nocturno` | charcoal with a cyan accent, herdr style |
-| `clasico` | an irssi tribute, blue status bar |
-| `alto-contraste` | pure black and white, accessible |
-| `bosque` | warm dark |
-| `glaciar` | cool dark |
-| `papel` | paper-like light |
-| `dracula` | violet dark with neon accents |
-| `catppuccin-mocha` | pastel dark, mauve and blue |
-| `catppuccin-latte` | pastel light |
-| `tokyo-night` | navy blue with electric accents |
-| `one-dark` | Atom-style charcoal gray |
-| `solarized-oscuro` | petrol blue, Solarized tones |
-| `rose-pine` | night purple, rose and gold |
-| `kanagawa` | Japanese ink, warm tones |
-| `everforest` | soft forest green |
-| `monokai` | dark olive, vivid colors |
-| `fosforo` | green CRT monitor |
-| `ambar` | amber CRT monitor |
-
-The colors of the well-known schemes were lightened where needed so that all text has a contrast of at least 4.5:1 (WCAG AA); a test checks this. Themes with their own background change the terminal background while wisirc is open and restore it on exit. The theme chosen from the menu is stored in `~/.config/wisirc/prefs.toml` and takes precedence over `[theme]` in the config.
-
-Keys that wisirc does not know (for example, from a halloy config) are ignored and shown as a warning. wisirc never modifies your config. If you change it from **≡ → Edit config**, `$EDITOR` opens, and when you close it the file is reloaded and any new servers are connected.
-
-> The password is stored in plain text. Protect the file with `chmod 600 ~/.config/wisirc/config.toml`.
-
-</details>
-
-<details>
-<summary><b>🌈 Server colors</b></summary>
-
-Each server has its own color in the sidebar: the selected row is filled with it, and the server's ▾ and its channels are written in it, so every group is easy to tell apart. By default servers get shades of green in sidebar order. Right-click a server → **Color…** to pick another one (green, dark green, lime, jade, cyan, blue, purple, pink, red, orange, amber, yellow, gray) or **Automatic**; arrows preview it live, Enter keeps it, Esc reverts. The choice is stored per server in `prefs.toml`. Unread channels are bold in the server's color; mentions keep the theme's alert color.
-
-</details>
-
-<details>
-<summary><b>📊 Dashboard</b></summary>
-
-wisirc starts on the dashboard; Esc or F2 takes you to the chat. **F2** (or ≡ → **Dashboard**, or `/panel` / `/dashboard`) opens it again: a live overview of all your servers, one card each:
-
-```
- ● LIVE  servers: 2 · connected: 2 · average 120ms
- ╔═ znc ══════════════════════════╗ ╭─ libera ───────────────────────╮
- ║ ● connected            ⏱ 2h 14m ║ │ ○ disconnected                 │
- ║ ▂▃▂▄▂▃▂  ● 42ms                ║ │ no lag samples yet             │
- ║ #lobby #code                   ║ │ no channels                    │
- ║ 3 new · 1 mention              ║ │ all read                       │
- ╚════════════════════════════════╝ ╰────────────────────────────────╯
-```
-
-Each card shows the connection state, uptime, an animated lag graph (green/yellow/red), joined channels and unread messages and mentions; card borders use the server's sidebar color. While the dashboard is open, lag is measured every 5 seconds instead of every 30. Click a card (or Enter) to go to that server; right click (or `c`) connects or disconnects it; arrows move between cards; F2 or Esc closes it.
-
-</details>
-
-<details>
-<summary><b>🌎 Language</b></summary>
-
-The interface is available in English and Spanish. By default it follows the system locale (`LC_ALL`, then `LC_MESSAGES`, then `LANG`): for example `LANG=es_MX.UTF-8` gives Spanish, and anything else gives English.
-
-To change it, open ≡ → **Language / Idioma**: moving with ↑/↓ previews the language live, Enter keeps it and Esc reverts to the previous one. You can also type `/lang en` or `/lang es` (aliases `/idioma` and `/language`). The choice is stored in `~/.config/wisirc/prefs.toml`.
-
-</details>
-
-<details>
-<summary><b>🗂️ Logs and mentions</b></summary>
-
-One file per day and channel is written to `~/.local/share/wisirc/logs/<server>/<channel>/<YYYY-MM-DD>.log` (respects `$XDG_DATA_HOME`). When you open a channel its last 200 lines are loaded as history, and **≡ → View logs** shows the full log of the current channel.
-
-When someone writes your nick or sends you a private message, the line is highlighted and the channel is marked in the sidebar. If you are not looking at that channel, or the terminal does not have focus, you also get a system notification: on macOS through `osascript` and on Linux through `notify-send`. If neither is available, the terminal bell rings.
-
-</details>
+<table>
+<tr><td width="33%"><a href="docs/guide.md#keyboard-shortcuts-and-commands">⌨️ Keyboard shortcuts and commands</a></td><td width="33%"><a href="docs/guide.md#mouse">🖱️ Mouse</a></td><td width="33%"><a href="docs/guide.md#connecting-to-a-server">🔌 Connecting to a server</a></td></tr>
+<tr><td width="33%"><a href="docs/guide.md#servers-screen">🗄️ Servers screen</a></td><td width="33%"><a href="docs/guide.md#coming-from-halloy">📥 Coming from Halloy</a></td><td width="33%"><a href="docs/guide.md#configuration-file">⚙️ Configuration file</a></td></tr>
+<tr><td width="33%"><a href="docs/guide.md#themes">🎨 Themes</a></td><td width="33%"><a href="docs/guide.md#server-colors">🌈 Server colors</a></td><td width="33%"><a href="docs/guide.md#dashboard">📊 Dashboard</a></td></tr>
+<tr><td width="33%"><a href="docs/guide.md#language">🌎 Language</a></td><td width="33%"><a href="docs/guide.md#logs-and-mentions">🗂️ Logs and mentions</a></td><td width="33%"></td></tr>
+</table>
 
 ## Contributing
 
