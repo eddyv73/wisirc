@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.9
+
+- Emoji no longer push the nick list and borders out of place: variation
+  selectors, skin tones and emoji joiners are dropped on screen, so a row
+  has the same width in every terminal. Logs keep the original text.
+
 ## v0.3.8
 
 - README redesigned as a landing page: animated banner, a mosaic of six

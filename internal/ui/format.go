@@ -77,6 +77,7 @@ func readColor(s string, i int) (int, int, bool) {
 // RenderIRC converts mIRC formatting codes to ANSI and drops other control
 // characters, so text from the network can never drive the terminal.
 func RenderIRC(text string) string {
+	text = stableWidth(text)
 	var b strings.Builder
 	st := ircStyle{fg: -1, bg: -1}
 	styled := false
@@ -150,7 +151,36 @@ func sanitize(s string) string {
 			return -1
 		}
 		return r
-	}, s)
+	}, stableWidth(s))
+}
+
+// stableWidth removes the parts of emoji sequences that terminals measure
+// differently (variation selectors, skin tones, joiners between emoji). A row
+// measured wider or narrower than the terminal draws it pushes the columns to
+// its right out of place. Letters that use a joiner keep it.
+func stableWidth(s string) string {
+	if !strings.ContainsAny(s, "\uFE0E\uFE0F\u200D\U0001F3FB\U0001F3FC\U0001F3FD\U0001F3FE\U0001F3FF") {
+		return s
+	}
+	var b strings.Builder
+	var prev rune
+	for _, r := range s {
+		switch {
+		case r == 0xFE0E || r == 0xFE0F:
+			continue
+		case (r == 0x200D || isSkinTone(r)) && isEmoji(prev):
+			continue
+		}
+		b.WriteRune(r)
+		prev = r
+	}
+	return b.String()
+}
+
+func isSkinTone(r rune) bool { return r >= 0x1F3FB && r <= 0x1F3FF }
+
+func isEmoji(r rune) bool {
+	return r >= 0x2600 && r <= 0x27BF || r >= 0x1F000 && r <= 0x1FAFF
 }
 
 // NickColor picks a stable color for a nickname from the active theme.
