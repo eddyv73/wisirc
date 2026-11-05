@@ -1,6 +1,9 @@
 # Changelog
 
-## v0.4.0-rc.1
+## v0.4.0
+
+Same as v0.4.0-rc.1, now stable:
+
 
 - Servers from `config.toml` are edited with the same form; the changes go
   to `servers.toml` (which now wins for the same name) and **Undo edit**
