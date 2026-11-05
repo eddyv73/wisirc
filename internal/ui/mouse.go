@@ -139,8 +139,7 @@ func (m *Model) handleClick(ms tea.Mouse) tea.Cmd {
 		}
 		if right {
 			if row.IsNetwork {
-				n := m.st.Network(row.Ref.Network)
-				menu := ServerMenu(row.Ref, n != nil && n.Connected, ms.X, ms.Y)
+				menu := ServerMenu(row.Ref, m.running(row.Ref.Network), m.disabled[row.Ref.Network], ms.X, ms.Y)
 				m.menu = &menu
 			} else {
 				menu := ChannelMenu(row.Ref, ms.X, ms.Y)

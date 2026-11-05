@@ -45,7 +45,7 @@ Comandos: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`
 | Clic en **≡** | Menú principal (conectar, servidores, unirse a un canal, logs, tema, idioma, config, ayuda, salir) |
 | Clic en un canal de la barra | Cambia a ese canal |
 | Clic en ▾ / ▸ | Colapsa o expande un servidor |
-| Clic derecho en un servidor | Conectar/Desconectar, Unirse a canal…, Color… |
+| Clic derecho en un servidor | Conectar/Desconectar, Unirse a canal…, Editar…, Activar/Desactivar, Color… |
 | Clic derecho en un canal | Salir (part), Cerrar, Marcar como leído, Ver topic |
 | Clic (o clic derecho) en un nick | Whois, Mensaje privado, Op/Voice, Kick, Ban |
 | Arrastrar sobre el chat o un panel de ayuda | Selecciona y copia al portapapeles (pbcopy, wl-copy/xclip/xsel; por SSH, OSC 52) |
@@ -92,17 +92,19 @@ Cuando el servidor responde, wisirc pregunta **¿Guardar &lt;nombre&gt; permanen
 
 ## 🗄️ Pantalla Servidores
 
-≡ → **Servidores** lista todos los servidores con su estado (● conectado, ◌ conectando, ○ desconectado) y de dónde vienen:
+≡ → **Servidores** lista todos los servidores con su estado (● conectado, ◌ conectando, ○ desconectado, ⊘ desactivado) y de dónde vienen:
 
 - `servers.toml`: los guarda wisirc. Se crean, editan y borran desde esta pantalla con un formulario (nombre, host, puerto, TLS, certificado inválido, nick, usuario `usuario/red` para BNC, clave, SASL, canales y *Conectar al iniciar*).
-- `config.toml`: tu archivo a mano. *Editar* abre el editor; no se borran desde la pantalla, para no perder tus comentarios.
+- `config.toml`: tu archivo a mano, que wisirc nunca escribe. *Editar* abre el mismo formulario y guarda tus cambios en `servers.toml`; el servidor queda marcado con ✎ y **[Deshacer edición]** vuelve a la versión de `config.toml`. No se borran desde la pantalla, para no perder tus comentarios.
 - `sin guardar`: conexiones hechas con `/connect`; se guardan con *Guardar*.
 
-Botones: **[+ Nuevo]**, **[Editar]**, **[Conectar]** / **[Desconectar]**, **[Guardar]** (solo conexiones sin guardar), **[Borrar]**, **[Cerrar]** y, si hay un config de Halloy, **[Importar de Halloy]**.
+Botones: **[+ Nuevo]**, **[Editar]**, **[Conectar]** / **[Desconectar]**, **[Desactivar]** / **[Activar]**, **[Guardar]** (solo conexiones sin guardar), **[Borrar]** (**[Deshacer edición]** en los ✎), **[Cerrar]** y, si hay un config de Halloy, **[Importar de Halloy]**.
 
-Teclas: ↑/↓ elegir · Enter editar · `n` nuevo · `c` conectar/desconectar · `s` guardar · `d` borrar (pide confirmación) · `i` importar de Halloy · Esc cerrar. En el formulario: Tab/↓ siguiente campo, Espacio marca casillas, Enter guarda, Esc vuelve.
+Teclas: ↑/↓ elegir · Enter editar · `n` nuevo · `c` conectar/desconectar · `x` desactivar/activar · `s` guardar · `d` borrar (pide confirmación) · `i` importar de Halloy · Esc cerrar. En el formulario: Tab/↓ siguiente campo, Espacio marca casillas, Enter guarda, Esc vuelve.
 
-Si un nombre está en los dos archivos, gana `config.toml`. Con `autoconnect = false` un servidor queda guardado pero no se conecta al iniciar.
+Si un nombre está en los dos archivos, gana `servers.toml`: así lo que editas aquí reemplaza a `config.toml`.
+
+**Desactiva** un servidor que está caído o que no quieres usar por ahora: wisirc lo desconecta, deja de reintentar y no lo conecta al iniciar (aparece con ⊘ aquí y en el panel). La lista se guarda en `prefs.toml`, así que sirve para servidores de cualquiera de los dos archivos. **Activar**, o conectarlo a mano, lo vuelve a encender. `autoconnect = false` en el archivo hace lo mismo para un servidor, de forma fija.
 
 > En macOS Terminal.app o iTerm2, activa "Usar Option como Meta" para que funcionen los atajos con `Alt`.
 
@@ -213,7 +215,7 @@ wisirc arranca en el panel; Esc o F2 te lleva al chat. **F2** (o ≡ → **Panel
  ╚════════════════════════════════╝ ╰────────────────────────────────╯
 ```
 
-Cada tarjeta muestra el estado, el tiempo conectado, un gráfico animado de latencia (verde/amarillo/rojo), los canales y los mensajes sin leer y menciones; el borde usa el color del servidor en la barra lateral. Mientras el panel está abierto, la latencia se mide cada 5 segundos en vez de cada 30. Clic en una tarjeta (o Enter) va a ese servidor; clic derecho (o `c`) lo conecta o desconecta; las flechas mueven entre tarjetas; F2 o Esc lo cierra.
+Cada tarjeta muestra el estado, el tiempo conectado, un gráfico animado de latencia (verde/amarillo/rojo), los canales y los mensajes sin leer y menciones; el borde usa el color del servidor en la barra lateral. Mientras el panel está abierto, la latencia se mide cada 5 segundos en vez de cada 30. Clic en una tarjeta (o Enter) va a ese servidor; `c` lo conecta o desconecta; `e` lo edita; `x` lo desactiva o activa; clic derecho abre el menú del servidor; las flechas mueven entre tarjetas; F2 o Esc lo cierra.
 
 <p align="right"><a href="#top">↑</a></p>
 

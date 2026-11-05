@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.0-rc.1
+
+- Servers from `config.toml` are edited with the same form; the changes go
+  to `servers.toml` (which now wins for the same name) and **Undo edit**
+  brings the `config.toml` version back. `config.toml` is never written.
+- Servers can be disabled and enabled (Servers screen, right-click menu,
+  dashboard `x`): a disabled server is disconnected, stops retrying and does
+  not connect on startup. Kept in `prefs.toml`.
+- Dashboard: `e` edits the selected server; the right-click menu shows
+  **Disconnect** while a server is still retrying.
+
 ## v0.3.9
 
 - Emoji no longer push the nick list and borders out of place: variation

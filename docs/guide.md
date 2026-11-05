@@ -45,7 +45,7 @@ Commands: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`
 | Click **≡** | Main menu (connect, servers, join a channel, logs, theme, language, config, help, quit) |
 | Click a channel in the sidebar | Switches to that channel |
 | Click ▾ / ▸ | Collapses or expands a server |
-| Right-click a server | Connect/Disconnect, Join channel…, Color… |
+| Right-click a server | Connect/Disconnect, Join channel…, Edit…, Enable/Disable, Color… |
 | Right-click a channel | Leave (part), Close, Mark as read, View topic |
 | Click (or right-click) a nick | Whois, Private message, Op/Voice, Kick, Ban |
 | Drag over the chat or a help panel | Selects and copies to the clipboard (pbcopy, wl-copy/xclip/xsel; over SSH, OSC 52) |
@@ -92,17 +92,19 @@ When the server answers, wisirc asks **Save &lt;name&gt; permanently?** (Y/N or 
 
 ## 🗄️ Servers screen
 
-≡ → **Servers** lists every server with its state (● connected, ◌ connecting, ○ disconnected) and where it comes from:
+≡ → **Servers** lists every server with its state (● connected, ◌ connecting, ○ disconnected, ⊘ disabled) and where it comes from:
 
 - `servers.toml`: saved by wisirc. Servers are created, edited and deleted from this screen with a form (name, host, port, TLS, invalid certificate, nick, `user/network` username for a BNC, password, SASL, channels and *Connect on startup*).
-- `config.toml`: your hand-written file. *Edit* opens the editor; these servers cannot be deleted from the screen, so your comments are never lost.
+- `config.toml`: your hand-written file, which wisirc never writes. *Edit* opens the same form and saves your changes to `servers.toml`; the server is then marked ✎ and **[Undo edit]** brings back the `config.toml` version. These servers cannot be deleted from the screen, so your comments are never lost.
 - unsaved: connections made with `/connect`; save them with *Save*.
 
-Buttons: **[+ New]**, **[Edit]**, **[Connect]** / **[Disconnect]**, **[Save]** (unsaved connections only), **[Delete]**, **[Close]** and, when a Halloy config is found, **[Import from Halloy]**.
+Buttons: **[+ New]**, **[Edit]**, **[Connect]** / **[Disconnect]**, **[Disable]** / **[Enable]**, **[Save]** (unsaved connections only), **[Delete]** (**[Undo edit]** on ✎ servers), **[Close]** and, when a Halloy config is found, **[Import from Halloy]**.
 
-Keys: ↑/↓ choose · Enter edit · `n` new · `c` connect/disconnect · `s` save · `d` delete (asks for confirmation) · `i` import from Halloy · Esc close. In the form: Tab/↓ next field, Space toggles checkboxes, Enter saves, Esc goes back.
+Keys: ↑/↓ choose · Enter edit · `n` new · `c` connect/disconnect · `x` disable/enable · `s` save · `d` delete (asks for confirmation) · `i` import from Halloy · Esc close. In the form: Tab/↓ next field, Space toggles checkboxes, Enter saves, Esc goes back.
 
-If a name is in both files, `config.toml` wins. With `autoconnect = false` a server stays saved but does not connect on startup.
+If a name is in both files, `servers.toml` wins: that is how edits made here override `config.toml`.
+
+**Disable** a server that is down or that you do not want for now: wisirc disconnects it, stops retrying and does not connect it on startup (it shows ⊘ in this screen and on the dashboard). The list is kept in `prefs.toml`, so it works for servers from either file. **Enable**, or connecting it by hand, turns it back on. `autoconnect = false` in the file does the same for a single server, permanently.
 
 > In macOS Terminal.app or iTerm2, enable "Use Option as Meta key" so the `Alt` shortcuts work.
 
@@ -213,7 +215,7 @@ wisirc starts on the dashboard; Esc or F2 takes you to the chat. **F2** (or ≡ 
  ╚════════════════════════════════╝ ╰────────────────────────────────╯
 ```
 
-Each card shows the connection state, uptime, an animated lag graph (green/yellow/red), joined channels and unread messages and mentions; card borders use the server's sidebar color. While the dashboard is open, lag is measured every 5 seconds instead of every 30. Click a card (or Enter) to go to that server; right click (or `c`) connects or disconnects it; arrows move between cards; F2 or Esc closes it.
+Each card shows the connection state, uptime, an animated lag graph (green/yellow/red), joined channels and unread messages and mentions; card borders use the server's sidebar color. While the dashboard is open, lag is measured every 5 seconds instead of every 30. Click a card (or Enter) to go to that server; `c` connects or disconnects it; `e` edits it; `x` disables or enables it; right click opens the server menu; arrows move between cards; F2 or Esc closes it.
 
 <p align="right"><a href="#top">↑</a></p>
 

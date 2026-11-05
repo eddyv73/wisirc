@@ -14,37 +14,39 @@ import (
 type MenuAction string
 
 const (
-	ActWhois       MenuAction = "whois"
-	ActQuery       MenuAction = "query"
-	ActOp          MenuAction = "op"
-	ActDeop        MenuAction = "deop"
-	ActVoice       MenuAction = "voice"
-	ActDevoice     MenuAction = "devoice"
-	ActKick        MenuAction = "kick"
-	ActBan         MenuAction = "ban"
-	ActPart        MenuAction = "part"
-	ActClose       MenuAction = "close"
-	ActMarkRead    MenuAction = "markread"
-	ActTopic       MenuAction = "topic"
-	ActConnect     MenuAction = "connect"
-	ActDisconnect  MenuAction = "disconnect"
-	ActJoin        MenuAction = "join"
-	ActLogs        MenuAction = "logs"
-	ActTheme       MenuAction = "theme"
-	ActConfig      MenuAction = "config"
-	ActHelp        MenuAction = "help"
-	ActQuit        MenuAction = "quit"
-	ActServers     MenuAction = "servers"
-	ActSaveAdHoc   MenuAction = "saveadhoc"
-	ActDelServer   MenuAction = "delserver"
-	ActDismiss     MenuAction = "dismiss"
-	ActPickTheme   MenuAction = "picktheme"
-	ActLang        MenuAction = "lang"
-	ActPickLang    MenuAction = "picklang"
-	ActDashboard   MenuAction = "dashboard"
-	ActServerColor MenuAction = "servercolor"
-	ActPickColor   MenuAction = "pickcolor"
-	ActSkipSave    MenuAction = "skipsave"
+	ActWhois        MenuAction = "whois"
+	ActQuery        MenuAction = "query"
+	ActOp           MenuAction = "op"
+	ActDeop         MenuAction = "deop"
+	ActVoice        MenuAction = "voice"
+	ActDevoice      MenuAction = "devoice"
+	ActKick         MenuAction = "kick"
+	ActBan          MenuAction = "ban"
+	ActPart         MenuAction = "part"
+	ActClose        MenuAction = "close"
+	ActMarkRead     MenuAction = "markread"
+	ActTopic        MenuAction = "topic"
+	ActConnect      MenuAction = "connect"
+	ActDisconnect   MenuAction = "disconnect"
+	ActJoin         MenuAction = "join"
+	ActLogs         MenuAction = "logs"
+	ActTheme        MenuAction = "theme"
+	ActConfig       MenuAction = "config"
+	ActHelp         MenuAction = "help"
+	ActQuit         MenuAction = "quit"
+	ActServers      MenuAction = "servers"
+	ActSaveAdHoc    MenuAction = "saveadhoc"
+	ActDelServer    MenuAction = "delserver"
+	ActDismiss      MenuAction = "dismiss"
+	ActPickTheme    MenuAction = "picktheme"
+	ActLang         MenuAction = "lang"
+	ActPickLang     MenuAction = "picklang"
+	ActDashboard    MenuAction = "dashboard"
+	ActServerColor  MenuAction = "servercolor"
+	ActEditServer   MenuAction = "editserver"
+	ActToggleServer MenuAction = "toggleserver"
+	ActPickColor    MenuAction = "pickcolor"
+	ActSkipSave     MenuAction = "skipsave"
 )
 
 type MenuItem struct {
@@ -124,12 +126,19 @@ func ChannelMenu(ref state.BufRef, x, y int) Menu {
 	}}
 }
 
-func ServerMenu(ref state.BufRef, connected bool, x, y int) Menu {
+// ServerMenu is a server's right-click menu. running means the client is
+// up, connected or still retrying, so it can be stopped.
+func ServerMenu(ref state.BufRef, running, disabled bool, x, y int) Menu {
 	first := MenuItem{i18n.T("Connect"), ActConnect}
-	if connected {
+	if running {
 		first = MenuItem{i18n.T("Disconnect"), ActDisconnect}
 	}
-	return Menu{Kind: MenuServer, Ref: ref, Title: sanitize(ref.Network), X: x, Y: y + 1, Items: []MenuItem{first, {i18n.T("Join channel…"), ActJoin}, {i18n.T("Color…"), ActServerColor}}}
+	toggle := MenuItem{i18n.T("Disable"), ActToggleServer}
+	if disabled {
+		toggle = MenuItem{i18n.T("Enable"), ActToggleServer}
+	}
+	return Menu{Kind: MenuServer, Ref: ref, Title: sanitize(ref.Network), X: x, Y: y + 1, Items: []MenuItem{
+		first, {i18n.T("Join channel…"), ActJoin}, {i18n.T("Edit…"), ActEditServer}, toggle, {i18n.T("Color…"), ActServerColor}}}
 }
 
 func (m Menu) swatchW() int {

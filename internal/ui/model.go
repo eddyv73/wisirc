@@ -51,6 +51,8 @@ type Deps struct {
 
 	ServerColors    map[string]string            // server → "#rrggbb" chosen in its Color… menu
 	SaveServerColor func(name, hex string) error // remembers it ("" = automatic)
+	Disabled        []string                     // servers that do not connect at startup
+	SaveDisabled    func(names []string) error   // remembers that list
 
 	// Halloy reads the servers of a Halloy config; nil when none was found.
 	Halloy func() (map[string]config.Server, []string, error)
@@ -143,6 +145,7 @@ type Model struct {
 	langBefore  string            // language to restore when the language menu is cancelled
 	tints       map[string]string // server → chosen color; "" or missing = automatic
 	tintBefore  string            // color to restore when the color menu is cancelled
+	disabled    map[string]bool   // servers switched off (Disabled)
 	flash       string            // short notice in the status bar, cleared on the next input
 	frame       int               // animation frame for the status bar
 	ticking     bool              // an animation tick is scheduled
@@ -176,6 +179,10 @@ func New(d Deps) *Model {
 	m.setTheme(themeFor(name))
 	for name, hex := range d.ServerColors {
 		m.tints[name] = hex
+	}
+	m.disabled = map[string]bool{}
+	for _, name := range d.Disabled {
+		m.disabled[name] = true
 	}
 	m.addHints(d.Hints)
 	if len(names) == 0 && d.Halloy != nil {

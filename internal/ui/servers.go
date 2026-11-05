@@ -28,7 +28,7 @@ type adminScreen struct {
 
 type adminHit struct {
 	y, x0, x1 int
-	act       string // "row", "field", "new", "edit", "toggle", "delete", "save", "close", "submit", "cancel"
+	act       string // "row", "field", "new", "edit", "toggle", "enable", "delete", "save", "close", "submit", "cancel"
 	index     int
 }
 
@@ -36,6 +36,7 @@ type adminEntry struct {
 	Name   string
 	Srv    config.Server
 	Origin string // "config.toml", "servers.toml" or originUnsaved
+	Edited bool   // a config.toml server whose edit lives in servers.toml
 }
 
 // originUnsaved marks a running /connect connection that is not saved.
@@ -203,10 +204,11 @@ func (m *Model) adminEntries() []adminEntry {
 	if cfg != nil {
 		for name, s := range cfg.Servers {
 			origin := "config.toml"
-			if cfg.Managed[name] {
+			_, edited := cfg.Shadowed[name]
+			if cfg.Managed[name] && !edited {
 				origin = "servers.toml"
 			}
-			out = append(out, adminEntry{Name: name, Srv: s, Origin: origin})
+			out = append(out, adminEntry{Name: name, Srv: s, Origin: origin, Edited: edited})
 		}
 	}
 	for _, name := range m.d.Nets.Names() {
@@ -239,12 +241,16 @@ func (m *Model) adminNote(text string, isErr bool) {
 func (m *Model) netStatus(name string) string {
 	n := m.st.Network(name)
 	switch {
+	case n == nil && m.disabled[name]:
+		return "⊘"
 	case n == nil:
 		return "○"
 	case n.Connected:
 		return "●"
 	case n.Connecting:
 		return "◌"
+	case m.disabled[name] && !m.running(name):
+		return "⊘"
 	}
 	return "○"
 }
@@ -284,9 +290,6 @@ func (m *Model) adminAction(act string) tea.Cmd {
 	switch act {
 	case "edit":
 		switch e.Origin {
-		case "config.toml":
-			m.adminNote(i18n.T("%s is in config.toml: opening the editor", e.Name), false)
-			return m.editConfig()
 		case originUnsaved:
 			m.adminNote(i18n.T("Use [Save] to save %s", e.Name), false)
 		default:
@@ -301,6 +304,8 @@ func (m *Model) adminAction(act string) tea.Cmd {
 			m.connect(e.Name)
 			m.adminNote(i18n.T("Connecting to %s…", e.Name), false)
 		}
+	case "enable":
+		m.adminNote(m.toggleServer(e.Name), false)
 	case "save":
 		if e.Origin != originUnsaved {
 			return nil
@@ -311,6 +316,13 @@ func (m *Model) adminAction(act string) tea.Cmd {
 			m.adminNote(i18n.T("%s saved to servers.toml", e.Name), false)
 		}
 	case "delete":
+		switch {
+		case e.Edited:
+			menu := ConfirmMenu(i18n.T("Undo the changes to %s and use config.toml again?", e.Name),
+				MenuItem{i18n.T("Yes, undo  (Y)"), ActDelServer}, MenuItem{i18n.T("Cancel  (N)"), ActDismiss}, ref, m.w, m.h)
+			m.menu = &menu
+			return nil
+		}
 		switch e.Origin {
 		case "config.toml":
 			m.adminNote(i18n.T("%s is in config.toml: delete it with ≡ → Edit config", e.Name), true)
@@ -334,9 +346,14 @@ func (m *Model) deleteServer(name string) {
 		}
 		return
 	}
-	if m.admin != nil {
-		m.adminNote(i18n.T("%s deleted", name), false)
+	if m.admin == nil {
+		return
 	}
+	if cfg := m.d.Nets.Config(); cfg != nil && hasServer(cfg.Servers, name) {
+		m.adminNote(i18n.T("%s uses config.toml again", name), false)
+		return
+	}
+	m.adminNote(i18n.T("%s deleted", name), false)
 }
 
 func (m *Model) submitForm() {
@@ -408,6 +425,8 @@ func (m *Model) adminKey(msg tea.KeyPressMsg) tea.Cmd {
 		return m.adminAction("edit")
 	case "c":
 		return m.adminAction("toggle")
+	case "x":
+		return m.adminAction("enable")
 	case "d", "delete", "backspace":
 		return m.adminAction("delete")
 	case "g", "s":
@@ -489,6 +508,9 @@ func (m *Model) renderAdmin(w, h int) []string {
 			title = i18n.T("Edit %s", f.old)
 		}
 		add(" " + lipgloss.NewStyle().Bold(true).Render(title) + adminDim.Render(i18n.T("  ·  Tab/↓ next · Space toggles · Enter saves · Esc goes back")))
+		if cfg := m.d.Nets.Config(); f.old != "" && cfg != nil && !cfg.Managed[f.old] && hasServer(cfg.Servers, f.old) {
+			add(adminDim.Render(i18n.T(" %s is in config.toml: your changes are saved to servers.toml, config.toml stays as it is", f.old)))
+		}
 		add("")
 		const labelW = 24
 		inputW := max(min(w-labelW-32, 32), 8)
@@ -531,7 +553,7 @@ func (m *Model) renderAdmin(w, h int) []string {
 		}
 		add(a.buttons(len(lines), [][2]string{{save, "submit"}, {cancel, "cancel"}}))
 	} else {
-		add(adminDim.Render(i18n.T(" ↑/↓ choose · Enter edit · n new · c connect · d delete · Esc close")))
+		add(adminDim.Render(i18n.T(" ↑/↓ choose · Enter edit · n new · c connect · x enable/disable · d delete · Esc close")))
 		add("")
 		entries := m.adminEntries()
 		if len(entries) == 0 {
@@ -569,6 +591,9 @@ func (m *Model) renderAdmin(w, h int) []string {
 			if origin == originUnsaved {
 				origin = i18n.T("unsaved")
 			}
+			if e.Edited {
+				origin += " ✎"
+			}
 			row := fmt.Sprintf(" %s %-*s  %-*s  %-15s %s", m.netStatus(e.Name), nameW, sanitize(e.Name), addrW, sanitize(addr), strings.Join(flags, " "), origin)
 			row = fit(row, w)
 			if i == a.sel {
@@ -579,24 +604,33 @@ func (m *Model) renderAdmin(w, h int) []string {
 		}
 		add("")
 		toggle := i18n.T("Connect")
+		del := i18n.T("Delete")
 		var extra [][2]string
 		if e, ok := m.adminSelected(); ok {
 			if m.running(e.Name) {
 				toggle = i18n.T("Disconnect")
 			}
-			if e.Origin == originUnsaved {
+			switch {
+			case e.Origin == originUnsaved:
 				extra = append(extra, [2]string{i18n.T("Save"), "save"})
+			case m.disabled[e.Name]:
+				extra = append(extra, [2]string{i18n.T("Enable"), "enable"})
+			default:
+				extra = append(extra, [2]string{i18n.T("Disable"), "enable"})
+			}
+			if e.Edited {
+				del = i18n.T("Undo edit")
 			}
 		}
 		btns := append([][2]string{{i18n.T("+ New"), "new"}, {i18n.T("Edit"), "edit"}, {toggle, "toggle"}}, extra...)
-		btns = append(btns, [2]string{i18n.T("Delete"), "delete"}, [2]string{i18n.T("Close"), "close"})
+		btns = append(btns, [2]string{del, "delete"}, [2]string{i18n.T("Close"), "close"})
 		add(a.buttons(len(lines), btns))
 		if m.d.Halloy != nil {
 			add(a.buttons(len(lines), [][2]string{{i18n.T("Import from Halloy"), "halloy"}}) + adminDim.Render(i18n.T("  brings your Halloy servers over and connects them")))
 		}
 		add("")
-		add(adminDim.Render(i18n.T(" ● connected  ◌ connecting  ○ disconnected")))
-		add(adminDim.Render(i18n.T(" servers.toml is written by wisirc · config.toml is edited by hand")))
+		add(adminDim.Render(i18n.T(" ● connected  ◌ connecting  ○ disconnected  ⊘ disabled")))
+		add(adminDim.Render(i18n.T(" servers.toml is written by wisirc · config.toml is edited by hand · ✎ edited here")))
 	}
 	if a.msg != "" {
 		add("")

@@ -71,13 +71,17 @@ func main() {
 	defer cancel()
 
 	mgr := app.NewManager(ctx, cfg, nil)
+	disabled := map[string]bool{}
+	for _, n := range config.LoadPrefs(*cfgPath).Disabled {
+		disabled[n] = true
+	}
 	names := make([]string, 0, len(cfg.Servers))
 	for n := range cfg.Servers {
 		names = append(names, n)
 	}
 	sort.Strings(names)
 	for _, n := range names {
-		if cfg.Servers[n].Auto() {
+		if cfg.Servers[n].Auto() && !disabled[n] {
 			mgr.Start(n, cfg.Servers[n])
 		}
 	}
@@ -113,6 +117,12 @@ func main() {
 			} else {
 				p.ServerColors[name] = hex
 			}
+			return config.SavePrefs(*cfgPath, p)
+		},
+		Disabled: config.LoadPrefs(*cfgPath).Disabled,
+		SaveDisabled: func(names []string) error {
+			p := config.LoadPrefs(*cfgPath)
+			p.Disabled = names
 			return config.SavePrefs(*cfgPath, p)
 		},
 		SaveLang: func(code string) error {

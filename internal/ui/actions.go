@@ -117,6 +117,10 @@ func (m *Model) runMenu(menu Menu, act MenuAction) tea.Cmd {
 		m.info(i18n.T("Not saved. You can save it later in ≡ → Servers."))
 	case ActDelServer:
 		m.deleteServer(ref.Network)
+	case ActEditServer:
+		m.editServer(ref.Network)
+	case ActToggleServer:
+		m.flash = m.toggleServer(ref.Network)
 	}
 	return nil
 }

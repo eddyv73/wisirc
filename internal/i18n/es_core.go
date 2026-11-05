@@ -51,7 +51,6 @@ func init() {
 		"Usage: -sasl user:password":                           "Uso: -sasl usuario:clave",
 		"%s is not a new connection":                           "%s no es una conexión nueva",
 		"The server needs a name":                              "El servidor necesita un nombre",
-		"%s is in config.toml: edit it with ≡ → Edit config":   "%s está en config.toml: edítalo con ≡ → Editar config",
 		"%s is in config.toml: delete it with ≡ → Edit config": "%s está en config.toml: bórralo con ≡ → Editar config",
 		"A server named %s already exists":                     "Ya existe un servidor llamado %s",
 		"There is no server %s":                                "No existe el servidor %s",
@@ -63,8 +62,7 @@ func init() {
 		"Missing value for %s":                                 "Falta el valor de %s",
 
 		// config
-		"unknown key ignored: %s":                         "clave desconocida ignorada: %s",
-		"%s is also in config.toml (config.toml is used)": "%s también está en config.toml (se usa config.toml)",
+		"unknown key ignored: %s": "clave desconocida ignorada: %s",
 
 		// halloy
 		"no server, not imported": "sin server, no se importa",

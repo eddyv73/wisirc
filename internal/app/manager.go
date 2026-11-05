@@ -199,17 +199,23 @@ func (m *Manager) SaveAdHoc(name string) error {
 }
 
 // SaveServer creates (old == "") or replaces the servers.toml entry old,
-// stored as name. Servers from config.toml are read-only here.
+// stored as name. Editing a config.toml server saves the edit to
+// servers.toml, which wins; config.toml is never written.
 func (m *Manager) SaveServer(old, name string, s config.Server) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if name == "" {
 		return errors.New(i18n.T("The server needs a name"))
 	}
-	if old != "" && !m.cfg.Managed[old] {
-		if _, ok := m.cfg.Servers[old]; ok {
-			return errors.New(i18n.T("%s is in config.toml: edit it with ≡ → Edit config", old))
-		}
+	if m.cfg.Shadowed == nil {
+		m.cfg.Shadowed = map[string]config.Server{}
+	}
+	hand, inHand := m.cfg.Shadowed[old]
+	if !inHand && old != "" && !m.cfg.Managed[old] {
+		hand, inHand = m.cfg.Servers[old]
+	}
+	if inHand && name != old {
+		return errors.New(i18n.T("%s is in config.toml: rename it there", old))
 	}
 	if _, taken := m.cfg.Servers[name]; taken && name != old {
 		return errors.New(i18n.T("A server named %s already exists", name))
@@ -226,6 +232,9 @@ func (m *Manager) SaveServer(old, name string, s config.Server) error {
 	delete(m.adhoc, name)
 	m.cfg.Servers[name] = s
 	m.cfg.Managed[name] = true
+	if inHand {
+		m.cfg.Shadowed[name] = hand
+	}
 	return nil
 }
 
@@ -262,7 +271,9 @@ func (m *Manager) Import(servers map[string]config.Server) (imported, skipped []
 	return imported, skipped, nil
 }
 
-// DeleteServer removes a servers.toml entry and disconnects it.
+// DeleteServer removes a servers.toml entry and disconnects it. For a
+// config.toml server edited from wisirc it drops the edit instead and keeps
+// the connection.
 func (m *Manager) DeleteServer(name string) error {
 	m.mu.Lock()
 	if !m.cfg.Managed[name] {
@@ -278,8 +289,14 @@ func (m *Manager) DeleteServer(name string) error {
 		m.mu.Unlock()
 		return err
 	}
-	delete(m.cfg.Servers, name)
 	delete(m.cfg.Managed, name)
+	if hand, ok := m.cfg.Shadowed[name]; ok {
+		m.cfg.Servers[name] = hand
+		delete(m.cfg.Shadowed, name)
+		m.mu.Unlock()
+		return nil
+	}
+	delete(m.cfg.Servers, name)
 	m.mu.Unlock()
 	m.Disconnect(name)
 	return nil

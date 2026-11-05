@@ -31,10 +31,13 @@ func TestLoadMergesServersFile(t *testing.T) {
 	if !ok || z.Server != "192.0.2.10" || z.Auto() || !cfg.Managed["znc"] {
 		t.Fatalf("znc %+v managed %v", z, cfg.Managed)
 	}
-	if cfg.Servers["examplenet"].Nickname != "alice" || cfg.Managed["examplenet"] {
-		t.Fatal("config.toml must win over servers.toml")
+	if cfg.Servers["examplenet"].Nickname != "otra" || !cfg.Managed["examplenet"] {
+		t.Fatal("servers.toml must win over config.toml")
 	}
-	if len(warns) != 1 || !strings.Contains(warns[0], "examplenet") {
+	if cfg.Shadowed["examplenet"].Nickname != "alice" || len(cfg.Shadowed) != 1 {
+		t.Fatalf("config.toml version not kept: %+v", cfg.Shadowed)
+	}
+	if len(warns) != 0 {
 		t.Fatalf("warns %q", warns)
 	}
 	if !cfg.Servers["examplenet"].Auto() {

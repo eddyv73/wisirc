@@ -141,11 +141,19 @@ func (m *Model) dashKey(msg tea.KeyPressMsg) tea.Cmd {
 	case "c":
 		if m.dash.sel < len(names) {
 			name := names[m.dash.sel]
-			if _, running := m.d.Nets.Get(name); running {
+			if m.running(name) {
 				m.d.Nets.Disconnect(name)
-			} else if _, err := m.d.Nets.Connect(name); err == nil {
-				m.st.AddNetwork(name)
+			} else {
+				m.startServer(name)
 			}
+		}
+	case "e":
+		if m.dash.sel < len(names) {
+			m.editServer(names[m.dash.sel])
+		}
+	case "x":
+		if m.dash.sel < len(names) {
+			m.flash = m.toggleServer(names[m.dash.sel])
 		}
 	}
 	return nil
@@ -183,8 +191,7 @@ func (m *Model) dashClick(ms tea.Mouse) tea.Cmd {
 	case tea.MouseLeft:
 		m.dashOpen(name)
 	case tea.MouseRight:
-		n := m.st.Network(name)
-		menu := ServerMenu(state.BufRef{Network: name}, n != nil && n.Connected, ms.X, ms.Y)
+		menu := ServerMenu(state.BufRef{Network: name}, m.running(name), m.disabled[name], ms.X, ms.Y)
 		m.menu = &menu
 	}
 	return nil
@@ -232,6 +239,8 @@ func (m *Model) dashCardLines(name string, w int) []string {
 		}
 	case n != nil && n.Connecting:
 		status = lipgloss.NewStyle().Foreground(th.accent).Render(spinFrames[m.frame%len(spinFrames)] + " " + i18n.T("connecting…"))
+	case m.disabled[name] && !m.running(name):
+		status = dim.Render("⊘ " + i18n.T("disabled"))
 	default:
 		status = dim.Render("○ " + i18n.T("disconnected"))
 	}
@@ -321,7 +330,7 @@ func (m *Model) renderDashboard(w, h int) []string {
 	}
 	live := lipgloss.NewStyle().Foreground(m.theme.ok).Render(pulseFrames[m.frame%len(pulseFrames)] + " LIVE")
 	out[0] = fit(" "+live+"  "+lipgloss.NewStyle().Bold(true).Render(summary), w)
-	out[1] = fit(" "+adminDim.Render(i18n.T("Enter/click go · right click or c connect/disconnect · arrows choose · F2/Esc close")), w)
+	out[1] = fit(" "+adminDim.Render(i18n.T("Enter/click go · c connect/disconnect · e edit · x enable/disable · right click menu · F2/Esc close")), w)
 	if len(names) == 0 {
 		out[3] = fit(" "+adminDim.Render(i18n.T("No servers yet: add one in ≡ → Servers")), w)
 		return out

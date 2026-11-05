@@ -28,16 +28,42 @@ jobs:
         run: |
           # this version's CHANGELOG section, then how to install
           awk -v v="## $GITHUB_REF_NAME" '$0==v{on=1;next} /^## /{on=0} on' CHANGELOG.md >notes.md
-          printf '\nInstall or upgrade:\n\n```sh\ncurl -fsSL https://raw.githubusercontent.com/%s/main/install.sh | sh\n```\n' "$GITHUB_REPOSITORY" >>notes.md
+          case "$GITHUB_REF_NAME" in
+          *-*) # a release candidate is only installed when asked for by name
+            printf '\nRelease candidate. Install it with:\n\n```sh\ncurl -fsSL https://raw.githubusercontent.com/%s/main/install.sh | sh -s -- --version %s\n```\n' "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" >>notes.md ;;
+          *)
+            printf '\nInstall or upgrade:\n\n```sh\ncurl -fsSL https://raw.githubusercontent.com/%s/main/install.sh | sh\n```\n' "$GITHUB_REPOSITORY" >>notes.md ;;
+          esac
       - name: publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          pre=""
+          case "$GITHUB_REF_NAME" in *-*) pre="--prerelease" ;; esac
           gh release create "$GITHUB_REF_NAME" dist/wisirc-* dist/SHA256SUMS \
-            --title "wisirc $GITHUB_REF_NAME" --notes-file notes.md --verify-tag
+            --title "wisirc $GITHUB_REF_NAME" --notes-file notes.md --verify-tag $pre
 
   # a release made with the workflow token does not start other workflows,
   # so the install check is called from here
   install:
     needs: publish
+    if: ${{ !contains(github.ref_name, '-') }}
     uses: ./.github/workflows/install.yml
+
+  # a release candidate is not "latest": install it by name instead
+  install-rc:
+    needs: publish
+    if: ${{ contains(github.ref_name, '-') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: install the release candidate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          WISIRC_PREFIX="$RUNNER_TEMP/wisirc" sh install.sh --version "$GITHUB_REF_NAME"
+          "$RUNNER_TEMP/wisirc/bin/wisirc" --version | tee /dev/stderr | grep -qF "$GITHUB_REF_NAME"

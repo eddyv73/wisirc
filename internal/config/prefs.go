@@ -14,6 +14,9 @@ type Prefs struct {
 
 	// ServerColors maps a server name to the "#rrggbb" picked for it.
 	ServerColors map[string]string `toml:"server_colors,omitempty"`
+
+	// Disabled lists servers that do not connect when wisirc starts.
+	Disabled []string `toml:"disabled_servers,omitempty"`
 }
 
 // PrefsPath returns the prefs.toml that sits next to the config file.
@@ -33,7 +36,7 @@ func LoadPrefs(cfgPath string) Prefs {
 // SavePrefs replaces prefs.toml, atomically and mode 0600.
 func SavePrefs(cfgPath string, p Prefs) error {
 	var buf bytes.Buffer
-	buf.WriteString("# Preferences chosen inside wisirc (theme, language, server colors). They win over config.toml.\n\n")
+	buf.WriteString("# Preferences chosen inside wisirc (theme, language, server colors, disabled servers). They win over config.toml.\n\n")
 	if err := toml.NewEncoder(&buf).Encode(p); err != nil {
 		return err
 	}

@@ -371,6 +371,7 @@ func (m *Model) closeBuffer(ref state.BufRef) {
 }
 
 func (m *Model) connect(arg string) {
+	m.enable(arg)
 	name, err := m.d.Nets.Connect(arg)
 	if err != nil {
 		m.errorLine(i18n.T("%s — type /connect to see examples", err.Error()))

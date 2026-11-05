@@ -33,10 +33,10 @@ func TestContextMenus(t *testing.T) {
 	if got := labels(ChannelMenu(ref, 0, 0)); !reflect.DeepEqual(got, []string{"Leave (part)", "Close", "Mark as read", "Show topic"}) {
 		t.Fatalf("chan %q", got)
 	}
-	if got := ServerMenu(ref, true, 0, 0).Items[0].Action; got != ActDisconnect {
+	if got := ServerMenu(ref, true, false, 0, 0).Items[0].Action; got != ActDisconnect {
 		t.Fatalf("server connected first = %v", got)
 	}
-	if got := ServerMenu(ref, false, 0, 0).Items[0].Action; got != ActConnect {
+	if got := ServerMenu(ref, false, false, 0, 0).Items[0].Action; got != ActConnect {
 		t.Fatalf("server disconnected first = %v", got)
 	}
 }

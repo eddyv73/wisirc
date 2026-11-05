@@ -41,3 +41,13 @@ func TestPrefsServerColors(t *testing.T) {
 		t.Fatalf("got %q", got)
 	}
 }
+
+func TestPrefsDisabledServers(t *testing.T) {
+	p := writeTemp(t, userExample)
+	if err := SavePrefs(p, Prefs{Disabled: []string{"darkstar", "znc"}}); err != nil {
+		t.Fatal(err)
+	}
+	if got := LoadPrefs(p).Disabled; len(got) != 2 || got[0] != "darkstar" {
+		t.Fatalf("got %q", got)
+	}
+}

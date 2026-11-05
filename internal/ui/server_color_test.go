@@ -63,7 +63,7 @@ func TestServerColorMenu(t *testing.T) {
 	if bgSeq(h.m.serverTint(netName)) != bgSeq(auto) || len(saved) != 0 {
 		t.Fatal("esc did not revert")
 	}
-	h.m.runMenu(ServerMenu(state.BufRef{Network: netName}, true, 3, 1), ActServerColor)
+	h.m.runMenu(ServerMenu(state.BufRef{Network: netName}, true, false, 3, 1), ActServerColor)
 	h.do(tea.KeyPressMsg{Code: tea.KeyDown})
 	h.do(tea.KeyPressMsg{Code: tea.KeyDown})
 	h.do(tea.KeyPressMsg{Code: tea.KeyEnter})
@@ -72,7 +72,7 @@ func TestServerColorMenu(t *testing.T) {
 		t.Fatalf("saved %v", saved)
 	}
 	// Automático goes back to the sidebar-order shade
-	h.m.runMenu(ServerMenu(state.BufRef{Network: netName}, true, 3, 1), ActServerColor)
+	h.m.runMenu(ServerMenu(state.BufRef{Network: netName}, true, false, 3, 1), ActServerColor)
 	h.m.menu.Selected = 0
 	h.do(tea.KeyPressMsg{Code: tea.KeyEnter})
 	if bgSeq(h.m.serverTint(netName)) != bgSeq(auto) || saved[len(saved)-1][1] != "" {

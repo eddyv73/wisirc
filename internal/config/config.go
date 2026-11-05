@@ -20,6 +20,9 @@ type Config struct {
 
 	Path    string          `toml:"-"` // config.toml this was loaded from
 	Managed map[string]bool `toml:"-"` // servers that live in servers.toml
+	// Shadowed keeps the config.toml version of servers edited from wisirc:
+	// servers.toml wins, and deleting the edit brings this one back.
+	Shadowed map[string]Server `toml:"-"`
 }
 
 type Server struct {
@@ -89,7 +92,7 @@ func (s Server) Addr() string {
 }
 
 // Load parses the config at path plus the servers.toml next to it. Unknown
-// keys are returned as warnings; config.toml wins when a name is in both.
+// keys are returned as warnings; servers.toml wins when a name is in both.
 func Load(path string) (*Config, []string, error) {
 	var cfg Config
 	warnings, err := decode(path, &cfg)
@@ -101,6 +104,7 @@ func Load(path string) (*Config, []string, error) {
 	}
 	cfg.Path = path
 	cfg.Managed = map[string]bool{}
+	cfg.Shadowed = map[string]Server{}
 
 	var managed Config
 	mw, err := decode(ServersPath(path), &managed)
@@ -114,9 +118,8 @@ func Load(path string) (*Config, []string, error) {
 		warnings = append(warnings, "servers.toml: "+w)
 	}
 	for name, s := range managed.Servers {
-		if _, dup := cfg.Servers[name]; dup {
-			warnings = append(warnings, "servers.toml: "+i18n.T("%s is also in config.toml (config.toml is used)", name))
-			continue
+		if hand, dup := cfg.Servers[name]; dup {
+			cfg.Shadowed[name] = hand
 		}
 		cfg.Servers[name] = s
 		cfg.Managed[name] = true

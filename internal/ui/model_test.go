@@ -35,6 +35,7 @@ type fakeNets struct {
 	adhoc    map[string]bool
 	savedAdh []string
 	connects []string
+	discons  []string
 	none     bool // no networks at all (first run)
 }
 
@@ -61,7 +62,7 @@ func (f *fakeNets) Import(servers map[string]config.Server) (imported, skipped [
 	}
 	return imported, skipped, nil
 }
-func (f *fakeNets) Disconnect(name string)             {}
+func (f *fakeNets) Disconnect(name string)             { f.discons = append(f.discons, name) }
 func (f *fakeNets) Reload(cfg *config.Config) []string { return nil }
 func (f *fakeNets) Names() []string {
 	if f.none {

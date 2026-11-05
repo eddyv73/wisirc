@@ -9,7 +9,7 @@ import (
 )
 
 const serversHeader = `# Servers saved from wisirc (≡ → Servers, or when connecting with /connect).
-# You can edit it by hand; if a name is also in config.toml, config.toml wins.
+# You can edit it by hand; if a name is also in config.toml, this file wins.
 
 `
 

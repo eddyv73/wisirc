@@ -44,8 +44,9 @@ Each server is a TOML table:
 Other keys: \fBusername\fR, \fBrealname\fR, \fBuse_tls\fR (on by default
 on port 6697), \fBpassword\fR (server or bouncer password),
 \fBdangerously_accept_invalid_certs\fR, \fBautoconnect\fR.
-Servers saved from inside wisirc go to \fIservers.toml\fR and choices made
-in the menus (theme, language, server colors) to \fIprefs.toml\fR, both
+Servers saved or edited from inside wisirc go to \fIservers.toml\fR, which
+wins over this file for the same name; choices made in the menus (theme,
+language, server colors, disabled servers) go to \fIprefs.toml\fR, both
 next to the configuration file.
 .SH KEYS
 .TP
@@ -85,10 +86,10 @@ The usual IRC commands.
 Configuration written by hand.
 .TP
 .I ~/.config/wisirc/servers.toml
-Servers saved from the Servers screen.
+Servers saved or edited from the Servers screen.
 .TP
 .I ~/.config/wisirc/prefs.toml
-Theme, language and server colors chosen in the menus.
+Theme, language, server colors and disabled servers chosen in the menus.
 .TP
 .I ~/.local/share/wisirc/logs/
 One folder per server and buffer, one file per day.

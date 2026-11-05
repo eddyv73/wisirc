@@ -310,9 +310,6 @@ func TestSaveServerEditRenameDelete(t *testing.T) {
 	if err := m.SaveServer("", "a", s); err == nil {
 		t.Fatal("name from config.toml accepted")
 	}
-	if err := m.SaveServer("a", "a", s); err == nil || !strings.Contains(err.Error(), "config.toml") {
-		t.Fatalf("editing a config.toml server: %v", err)
-	}
 	if err := m.SaveServer("ex", "ex2", s); err != nil {
 		t.Fatal(err)
 	}
@@ -355,5 +352,43 @@ func TestImportSkipsExisting(t *testing.T) {
 	again, _, _ := config.Load(cfg.Path)
 	if again.Servers["a"].Server != "a" || !again.Managed["b"] || !again.Managed["c"] {
 		t.Fatalf("saved %+v", again.Servers)
+	}
+}
+
+func TestEditConfigServerOverridesAndReverts(t *testing.T) {
+	cfg := tempCfg(t) // "a" lives in config.toml
+	orig := cfg.Servers["a"]
+	m, _ := newTestManager(t, cfg)
+	edited := orig
+	edited.Nickname = "nuevo"
+	if err := m.SaveServer("a", "b", edited); err == nil || !strings.Contains(err.Error(), "config.toml") {
+		t.Fatalf("renamed a config.toml server: %v", err)
+	}
+	if err := m.SaveServer("a", "a", edited); err != nil {
+		t.Fatal(err)
+	}
+	if got := m.Config().Servers["a"]; got.Nickname != "nuevo" || !m.Config().Managed["a"] {
+		t.Fatalf("manager %+v", got)
+	}
+	again, _, _ := config.Load(cfg.Path)
+	if again.Servers["a"].Nickname != "nuevo" || again.Shadowed["a"].Nickname != orig.Nickname {
+		t.Fatalf("reloaded %+v shadowed %+v", again.Servers["a"], again.Shadowed)
+	}
+	edited.Nickname = "otra vez"
+	if err := m.SaveServer("a", "a", edited); err != nil {
+		t.Fatal(err)
+	}
+	if m.Config().Shadowed["a"].Nickname != orig.Nickname {
+		t.Fatal("second edit lost the config.toml version")
+	}
+	if err := m.DeleteServer("a"); err != nil {
+		t.Fatal(err)
+	}
+	if got := m.Config().Servers["a"]; got.Nickname != orig.Nickname || m.Config().Managed["a"] || len(m.Config().Shadowed) != 0 {
+		t.Fatalf("revert: %+v managed %v", got, m.Config().Managed)
+	}
+	again, _, _ = config.Load(cfg.Path)
+	if again.Servers["a"].Nickname != orig.Nickname || len(again.Managed) != 0 {
+		t.Fatalf("revert on disk: %+v", again.Servers["a"])
 	}
 }
