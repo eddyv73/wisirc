@@ -22,7 +22,7 @@ func LangMenu(x, y int) Menu {
 }
 
 func (m *Model) openLangMenu() {
-	g := GlobalMenu()
+	g := m.globalMenu()
 	r := g.Rect(m.w, m.menuH())
 	y := r.Y + 1
 	for i, it := range g.Items {

@@ -79,7 +79,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 	case "ctrl+c":
 		return m.quit("")
 	case "f1":
-		g := GlobalMenu()
+		g := m.globalMenu()
 		m.menu = &g
 		return nil
 	case "enter":
@@ -282,6 +282,8 @@ func (m *Model) submit() tea.Cmd {
 		}
 	case commands.Help:
 		m.showHelp()
+	case commands.Update:
+		return m.startUpdate()
 	case commands.Dashboard:
 		if m.dash == nil {
 			m.toggleDashboard()

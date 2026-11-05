@@ -291,7 +291,7 @@ func ThemeMenu(current string, x, y int) Menu {
 }
 
 func (m *Model) openThemeMenu() {
-	g := GlobalMenu()
+	g := m.globalMenu()
 	r := g.Rect(m.w, m.menuH())
 	y := r.Y + 1
 	for i, it := range g.Items {

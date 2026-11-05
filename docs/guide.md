@@ -14,7 +14,8 @@ Everything wisirc does, by topic. Back to the [README](../README.md) · [en espa
 [🌈 Server colors](#server-colors) ·
 [📊 Dashboard](#dashboard) ·
 [🌎 Language](#language) ·
-[🗂️ Logs and mentions](#logs-and-mentions)
+[🗂️ Logs and mentions](#logs-and-mentions) ·
+[⬆️ Updates](#updates)
 
 <a id="keyboard-shortcuts-and-commands"></a>
 
@@ -32,7 +33,7 @@ Everything wisirc does, by topic. Back to the [README](../README.md) · [en espa
 | `Esc` | Close menu or panel |
 | `Ctrl+C` | Quit |
 
-Commands: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/theme`, `/lang`, `/help`. To send text that starts with `/`, type `//`.
+Commands: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/theme`, `/lang`, `/update`, `/help`. To send text that starts with `/`, type `//`.
 
 <p align="right"><a href="#top">↑</a></p>
 
@@ -236,5 +237,22 @@ To change it, open ≡ → **Language / Idioma**: moving with ↑/↓ previews t
 One file per day and channel is written to `~/.local/share/wisirc/logs/<server>/<channel>/<YYYY-MM-DD>.log` (respects `$XDG_DATA_HOME`). When you open a channel its last 200 lines are loaded as history, and **≡ → View logs** shows the full log of the current channel.
 
 When someone writes your nick or sends you a private message, the line is highlighted and the channel is marked in the sidebar. If you are not looking at that channel, or the terminal does not have focus, you also get a system notification: on macOS through `osascript` and on Linux through `notify-send`. If neither is available, the terminal bell rings.
+
+<p align="right"><a href="#top">↑</a></p>
+
+<a id="updates"></a>
+
+## ⬆️ Updates
+
+wisirc looks for a new release on GitHub when it starts and then once a day. When there is one, the status bar shows **⬆ v0.4.1 available · /update** and the ≡ menu gets **Update to v0.4.1**. Click either, or type `/update` (alias `/actualizar`): wisirc downloads the release binary for your system, checks it against the release's `SHA256SUMS`, makes sure it starts, and only then replaces the running binary. The new version is used the next time you open wisirc, so your connections are not cut. `/update` with nothing announced checks right away.
+
+Only stable releases are offered, never release candidates. If wisirc was installed with Homebrew it does not replace itself: it tells you to run `brew upgrade wisirc`. Builds from source that are not a release (`dev`) are never offered updates.
+
+The check is one request to `api.github.com` and nothing about you is sent. To turn it off, so wisirc never contacts GitHub:
+
+```toml
+[updates]
+  check = false
+```
 
 <p align="right"><a href="#top">↑</a></p>

@@ -18,6 +18,9 @@ const exampleConfig = `# wisirc configuration
 # [notifications]
 #   enabled = true
 
+# [updates]
+#   check = true   # look for new releases on GitHub; false = never contact GitHub
+
 # [theme]
 #   name = "dark"   # or "light"
 `
@@ -34,6 +37,9 @@ const starterConfig = `# wisirc configuration
 
 # [notifications]
 #   enabled = true
+
+# [updates]
+#   check = true   # look for new releases on GitHub; false = never contact GitHub
 
 # [theme]
 #   name = "dark"

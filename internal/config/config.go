@@ -16,6 +16,7 @@ import (
 type Config struct {
 	Servers       map[string]Server `toml:"servers"`
 	Notifications Notifications     `toml:"notifications"`
+	Updates       Updates           `toml:"updates"`
 	Theme         Theme             `toml:"theme"`
 
 	Path    string          `toml:"-"` // config.toml this was loaded from
@@ -57,6 +58,14 @@ type Notifications struct {
 
 // On reports whether notifications are enabled (default true).
 func (n Notifications) On() bool { return n.Enabled == nil || *n.Enabled }
+
+// Updates controls the check for new releases on GitHub.
+type Updates struct {
+	Check *bool `toml:"check"`
+}
+
+// On reports whether wisirc looks for new releases (on unless check = false).
+func (u Updates) On() bool { return u.Check == nil || *u.Check }
 
 type Theme struct {
 	Name string `toml:"name"`

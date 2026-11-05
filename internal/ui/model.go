@@ -51,6 +51,8 @@ type Deps struct {
 
 	ServerColors    map[string]string            // server → "#rrggbb" chosen in its Color… menu
 	SaveServerColor func(name, hex string) error // remembers it ("" = automatic)
+	Version         string                       // this build, e.g. "v0.4.0"
+	Updates         Updater                      // nil: no release checks
 	Disabled        []string                     // servers that do not connect at startup
 	SaveDisabled    func(names []string) error   // remembers that list
 
@@ -146,6 +148,7 @@ type Model struct {
 	tints       map[string]string // server → chosen color; "" or missing = automatic
 	tintBefore  string            // color to restore when the color menu is cancelled
 	disabled    map[string]bool   // servers switched off (Disabled)
+	update      updateState       // newer release found on GitHub
 	flash       string            // short notice in the status bar, cleared on the next input
 	frame       int               // animation frame for the status bar
 	ticking     bool              // an animation tick is scheduled
@@ -222,7 +225,7 @@ func (m *Model) Layout() Layout {
 }
 
 func (m *Model) Init() tea.Cmd {
-	return tea.Batch(waitEvent(m.d.Events), textinput.Blink, animTick())
+	return tea.Batch(waitEvent(m.d.Events), textinput.Blink, animTick(), m.checkUpdate(false))
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -252,6 +255,13 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(append(cmds, waitEvent(m.d.Events))...)
 	case configEditedMsg:
 		m.reloadConfig(msg.err)
+		return m, nil
+	case updateTickMsg:
+		return m, m.checkUpdate(false)
+	case updateCheckedMsg:
+		return m, m.updateChecked(msg)
+	case updateAppliedMsg:
+		m.updateApplied(msg)
 		return m, nil
 	case tea.KeyPressMsg:
 		return m, m.handleKey(msg)

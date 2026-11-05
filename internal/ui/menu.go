@@ -45,6 +45,7 @@ const (
 	ActServerColor  MenuAction = "servercolor"
 	ActEditServer   MenuAction = "editserver"
 	ActToggleServer MenuAction = "toggleserver"
+	ActUpdate       MenuAction = "update"
 	ActPickColor    MenuAction = "pickcolor"
 	ActSkipSave     MenuAction = "skipsave"
 )

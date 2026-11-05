@@ -163,7 +163,7 @@ func (m *Model) renderStatusBar(w int) string {
 	const dividerW = 3
 	middle := func(n int) barSeg {
 		var s barSeg
-		parts := append(append([]barSeg{}, flash), chips[:n]...)
+		parts := append(append([]barSeg{}, flash, m.updateSeg(base)), chips[:n]...)
 		if hidden := len(chips) - n; hidden > 0 {
 			var more barSeg
 			more.add(base.Foreground(th.dim).Render(fmt.Sprintf("+%d", hidden)), "mention", state.BufRef{})
@@ -253,6 +253,8 @@ func (m *Model) statusClick(x int) tea.Cmd {
 		case "mention":
 			m.dash = nil
 			m.nextActivity()
+		case "update":
+			return m.startUpdate()
 		}
 		return nil
 	}

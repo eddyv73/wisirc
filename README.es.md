@@ -189,7 +189,7 @@ La <a href="docs/guide.es.md"><b>guía</b></a> lo cubre todo por tema, y <code>m
 <tr><td width="33%"><a href="docs/guide.es.md#atajos-de-teclado-y-comandos">⌨️ Atajos de teclado y comandos</a></td><td width="33%"><a href="docs/guide.es.md#mouse">🖱️ Mouse</a></td><td width="33%"><a href="docs/guide.es.md#conectarse-a-un-servidor">🔌 Conectarse a un servidor</a></td></tr>
 <tr><td width="33%"><a href="docs/guide.es.md#pantalla-servidores">🗄️ Pantalla Servidores</a></td><td width="33%"><a href="docs/guide.es.md#venir-desde-halloy">📥 Venir desde Halloy</a></td><td width="33%"><a href="docs/guide.es.md#archivo-de-configuración">⚙️ Archivo de configuración</a></td></tr>
 <tr><td width="33%"><a href="docs/guide.es.md#temas">🎨 Temas</a></td><td width="33%"><a href="docs/guide.es.md#colores-por-servidor">🌈 Colores por servidor</a></td><td width="33%"><a href="docs/guide.es.md#panel">📊 Panel</a></td></tr>
-<tr><td width="33%"><a href="docs/guide.es.md#idioma">🌎 Idioma</a></td><td width="33%"><a href="docs/guide.es.md#logs-y-menciones">🗂️ Logs y menciones</a></td><td width="33%"></td></tr>
+<tr><td width="33%"><a href="docs/guide.es.md#idioma">🌎 Idioma</a></td><td width="33%"><a href="docs/guide.es.md#logs-y-menciones">🗂️ Logs y menciones</a></td><td width="33%"><a href="docs/guide.es.md#actualizaciones">⬆️ Actualizaciones</a></td></tr>
 </table>
 
 ## Contribuir

@@ -80,6 +80,13 @@ Without arguments it opens a screen with examples.
 The usual IRC commands.
 .PP
 .BR /theme " (" /tema ") [\fIname\fR], " /lang " (" /idioma ") [\fBen\fR|\fBes\fR], " /panel ", " /help
+.PP
+.BR /update " (" /actualizar )
+.br
+Installs the newest release over this binary (checked against its
+SHA256SUMS); it is used the next time wisirc starts. wisirc looks for new
+releases on GitHub at startup and once a day; turn that off with
+\fBcheck = false\fR under \fB[updates]\fR.
 .SH FILES
 .TP
 .I ~/.config/wisirc/config.toml

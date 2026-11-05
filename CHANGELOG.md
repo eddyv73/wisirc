@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.1-rc.1
+
+- wisirc tells you when a new release is out (status bar and ≡ menu) and
+  `/update` installs it: the release binary, checked against `SHA256SUMS`,
+  replaces the running one and is used the next time wisirc starts.
+  Homebrew installs are told to `brew upgrade`. `[updates] check = false`
+  turns the check off.
+
 ## v0.4.0
 
 Same as v0.4.0-rc.1, now stable:

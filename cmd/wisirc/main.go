@@ -20,6 +20,7 @@ import (
 	"github.com/eddyv73/wisirc/internal/logs"
 	"github.com/eddyv73/wisirc/internal/notify"
 	"github.com/eddyv73/wisirc/internal/ui"
+	"github.com/eddyv73/wisirc/internal/update"
 )
 
 // Version is set at build time with -ldflags "-X main.Version=...".
@@ -119,6 +120,8 @@ func main() {
 			}
 			return config.SavePrefs(*cfgPath, p)
 		},
+		Version:  versionString(),
+		Updates:  updater(cfg),
 		Disabled: config.LoadPrefs(*cfgPath).Disabled,
 		SaveDisabled: func(names []string) error {
 			p := config.LoadPrefs(*cfgPath)
@@ -184,6 +187,14 @@ func colorOverride(getenv func(string) string) (colorprofile.Profile, bool) {
 		return colorprofile.TrueColor, true
 	}
 	return 0, false
+}
+
+// updater checks GitHub for new releases unless [updates] check = false.
+func updater(cfg *config.Config) ui.Updater {
+	if !cfg.Updates.On() {
+		return nil
+	}
+	return update.New()
 }
 
 // versionString is the -ldflags version, or the module version recorded by

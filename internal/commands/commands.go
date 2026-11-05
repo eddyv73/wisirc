@@ -30,6 +30,7 @@ const (
 	Theme
 	Lang
 	Dashboard
+	Update
 	Error
 )
 
@@ -228,6 +229,8 @@ func Parse(input string, ctx Context) Action {
 		return Action{Kind: Lang, Arg: rest}
 	case "tema", "theme":
 		return Action{Kind: Theme, Arg: rest}
+	case "update", "actualizar":
+		return Action{Kind: Update}
 	}
 	return errorf(i18n.T("Unknown command: /%s", name))
 }

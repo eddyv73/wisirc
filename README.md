@@ -189,7 +189,7 @@ The <a href="docs/guide.md"><b>guide</b></a> covers everything by topic, and <co
 <tr><td width="33%"><a href="docs/guide.md#keyboard-shortcuts-and-commands">⌨️ Keyboard shortcuts and commands</a></td><td width="33%"><a href="docs/guide.md#mouse">🖱️ Mouse</a></td><td width="33%"><a href="docs/guide.md#connecting-to-a-server">🔌 Connecting to a server</a></td></tr>
 <tr><td width="33%"><a href="docs/guide.md#servers-screen">🗄️ Servers screen</a></td><td width="33%"><a href="docs/guide.md#coming-from-halloy">📥 Coming from Halloy</a></td><td width="33%"><a href="docs/guide.md#configuration-file">⚙️ Configuration file</a></td></tr>
 <tr><td width="33%"><a href="docs/guide.md#themes">🎨 Themes</a></td><td width="33%"><a href="docs/guide.md#server-colors">🌈 Server colors</a></td><td width="33%"><a href="docs/guide.md#dashboard">📊 Dashboard</a></td></tr>
-<tr><td width="33%"><a href="docs/guide.md#language">🌎 Language</a></td><td width="33%"><a href="docs/guide.md#logs-and-mentions">🗂️ Logs and mentions</a></td><td width="33%"></td></tr>
+<tr><td width="33%"><a href="docs/guide.md#language">🌎 Language</a></td><td width="33%"><a href="docs/guide.md#logs-and-mentions">🗂️ Logs and mentions</a></td><td width="33%"><a href="docs/guide.md#updates">⬆️ Updates</a></td></tr>
 </table>
 
 ## Contributing

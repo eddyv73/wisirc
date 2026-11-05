@@ -110,7 +110,7 @@ func (m *Model) handleClick(ms tea.Mouse) tea.Cmd {
 	switch zone {
 	case ZoneMenuIcon:
 		if left {
-			g := GlobalMenu()
+			g := m.globalMenu()
 			m.menu = &g
 		}
 	case ZoneSidebarBorder:

@@ -14,7 +14,8 @@ Todo lo que hace wisirc, por tema. Volver al [README](../README.es.md) · [in En
 [🌈 Colores por servidor](#colores-por-servidor) ·
 [📊 Panel](#panel) ·
 [🌎 Idioma](#idioma) ·
-[🗂️ Logs y menciones](#logs-y-menciones)
+[🗂️ Logs y menciones](#logs-y-menciones) ·
+[⬆️ Actualizaciones](#actualizaciones)
 
 <a id="atajos-de-teclado-y-comandos"></a>
 
@@ -32,7 +33,7 @@ Todo lo que hace wisirc, por tema. Volver al [README](../README.es.md) · [in En
 | `Esc` | Cerrar menú o panel |
 | `Ctrl+C` | Salir |
 
-Comandos: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/tema`, `/lang`, `/help`. Para enviar un texto que empieza por `/`, escribe `//`.
+Comandos: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/tema`, `/lang`, `/update`, `/help`. Para enviar un texto que empieza por `/`, escribe `//`.
 
 <p align="right"><a href="#top">↑</a></p>
 
@@ -236,5 +237,22 @@ Para cambiarlo, abre ≡ → **Language / Idioma**: al moverte con ↑/↓ ves e
 Se guarda un archivo por día y canal en `~/.local/share/wisirc/logs/<servidor>/<canal>/<AAAA-MM-DD>.log` (respeta `$XDG_DATA_HOME`). Al abrir un canal se cargan sus últimas 200 líneas como historial, y **≡ → Ver logs** muestra el registro completo del canal actual.
 
 Cuando alguien escribe tu nick o te manda un privado, la línea se resalta y el canal se marca en la barra. Si no estás viendo ese canal, o la terminal no tiene el foco, también recibes una notificación del sistema: en macOS con `osascript` y en Linux con `notify-send`. Si no hay ninguno de los dos, suena la campana de la terminal.
+
+<p align="right"><a href="#top">↑</a></p>
+
+<a id="actualizaciones"></a>
+
+## ⬆️ Actualizaciones
+
+wisirc busca una versión nueva en GitHub al iniciar y luego una vez al día. Si la hay, la barra de estado muestra **⬆ v0.4.1 disponible · /update** y el menú ≡ suma **Actualizar a v0.4.1**. Haz clic en cualquiera de los dos, o escribe `/update` (alias `/actualizar`): wisirc descarga el binario de la versión para tu sistema, lo verifica con el `SHA256SUMS` de la release, comprueba que arranca y solo entonces reemplaza el binario en uso. La versión nueva se usa la próxima vez que abras wisirc, así no se cortan tus conexiones. `/update` sin nada anunciado busca en ese momento.
+
+Solo se ofrecen versiones estables, nunca release candidates. Si wisirc se instaló con Homebrew no se reemplaza solo: te dice que ejecutes `brew upgrade wisirc`. Las compilaciones desde el código que no son una versión (`dev`) nunca reciben actualizaciones.
+
+La búsqueda es una sola consulta a `api.github.com` y no envía nada sobre ti. Para apagarla, y que wisirc nunca contacte a GitHub:
+
+```toml
+[updates]
+  check = false
+```
 
 <p align="right"><a href="#top">↑</a></p>
