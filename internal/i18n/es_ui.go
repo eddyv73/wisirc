@@ -141,6 +141,7 @@ func init() {
 		"Cancel  (N)":                                          "Cancelar  (N)",
 		"%s deleted":                                           "%s borrado",
 		" · applies on reconnect":                              " · se aplica al reconectar",
+		" · reconnecting with the new settings":                " · reconectando con los nuevos datos",
 		"New server":                                           "Nuevo servidor",
 		"Edit %s":                                              "Editar %s",
 		"  ·  Tab/↓ next · Space toggles · Enter saves · Esc goes back": "  ·  Tab/↓ siguiente · Espacio marca · Enter guarda · Esc vuelve",

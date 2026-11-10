@@ -359,6 +359,11 @@ func (m *Model) deleteServer(name string) {
 func (m *Model) submitForm() {
 	f := m.admin.form
 	name, s, err := f.server()
+	var prev config.Server
+	if cfg := m.d.Nets.Config(); cfg != nil {
+		prev = cfg.Servers[f.old]
+	}
+	wasRunning := f.old != "" && m.running(f.old)
 	if err == nil {
 		err = m.d.Nets.SaveServer(f.old, name, s)
 	}
@@ -367,7 +372,10 @@ func (m *Model) submitForm() {
 		return
 	}
 	note := i18n.T("%s saved to servers.toml", name)
-	if m.running(name) || (f.old != "" && m.running(f.old)) {
+	switch {
+	case wasRunning && (name != f.old || !config.SameConnection(prev, s)):
+		note += i18n.T(" · reconnecting with the new settings")
+	case wasRunning:
 		note += i18n.T(" · applies on reconnect")
 	}
 	m.admin.form = nil

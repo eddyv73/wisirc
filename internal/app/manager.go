@@ -22,6 +22,7 @@ type DialFactory func(irc.Options) func(context.Context) (net.Conn, error)
 type entry struct {
 	client *irc.Client
 	cancel context.CancelFunc
+	srv    config.Server // the settings it was started with
 }
 
 // Manager owns one irc.Client per network and implements ui.Networks.
@@ -74,7 +75,7 @@ func (m *Manager) Start(name string, s config.Server) {
 	}
 	ctx, cancel := context.WithCancel(m.ctx)
 	c := irc.New(opts, m.events)
-	e := &entry{client: c, cancel: cancel}
+	e := &entry{client: c, cancel: cancel, srv: s}
 	m.clients[name] = e
 	go func() {
 		c.Run(ctx)
@@ -202,6 +203,14 @@ func (m *Manager) SaveAdHoc(name string) error {
 // stored as name. Editing a config.toml server saves the edit to
 // servers.toml, which wins; config.toml is never written.
 func (m *Manager) SaveServer(old, name string, s config.Server) error {
+	if err := m.saveServer(old, name, s); err != nil {
+		return err
+	}
+	m.restartIfChanged(old, name, s)
+	return nil
+}
+
+func (m *Manager) saveServer(old, name string, s config.Server) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if name == "" {
@@ -294,12 +303,28 @@ func (m *Manager) DeleteServer(name string) error {
 		m.cfg.Servers[name] = hand
 		delete(m.cfg.Shadowed, name)
 		m.mu.Unlock()
+		m.restartIfChanged(name, name, hand)
 		return nil
 	}
 	delete(m.cfg.Servers, name)
 	m.mu.Unlock()
 	m.Disconnect(name)
 	return nil
+}
+
+// restartIfChanged reconnects a running client that was started as old when
+// it is now called name or connects differently, so an edit (a new address,
+// say) takes effect instead of the client retrying the old settings forever.
+func (m *Manager) restartIfChanged(old, name string, s config.Server) {
+	m.mu.Lock()
+	e, running := m.clients[old]
+	same := running && old == name && config.SameConnection(e.srv, s)
+	m.mu.Unlock()
+	if !running || same {
+		return
+	}
+	m.Disconnect(old)
+	m.Start(name, s)
 }
 
 func (m *Manager) managedLocked() map[string]config.Server {

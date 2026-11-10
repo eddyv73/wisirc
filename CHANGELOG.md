@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.1-rc.2
+
+- Fixed: editing a connected (or retrying) server's address, port, TLS,
+  nick or credentials now reconnects it with the new settings. Before, it
+  kept retrying the old address until wisirc was restarted. Changing only
+  the channels leaves the connection alone.
+
 ## v0.4.1-rc.1
 
 - wisirc tells you when a new release is out (status bar and ≡ menu) and

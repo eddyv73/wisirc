@@ -392,3 +392,67 @@ func TestEditConfigServerOverridesAndReverts(t *testing.T) {
 		t.Fatalf("revert on disk: %+v", again.Servers["a"])
 	}
 }
+
+func (d *dialRec) addrs() []string {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	var out []string
+	for _, o := range d.opts {
+		out = append(out, o.Addr)
+	}
+	return out
+}
+
+func TestSaveServerReconnectsWithNewAddress(t *testing.T) {
+	cfg := tempCfg(t)
+	m, d := newTestManager(t, cfg)
+	s := config.Server{Nickname: "pepe", Server: "192.0.2.1", Port: 7000}
+	if err := m.SaveServer("", "znc", s); err != nil {
+		t.Fatal(err)
+	}
+	m.Start("znc", s)
+
+	// only the channel list changes: the connection is kept
+	s.Channels = []string{"#a"}
+	if err := m.SaveServer("znc", "znc", s); err != nil {
+		t.Fatal(err)
+	}
+	if got := d.addrs(); len(got) != 1 {
+		t.Fatalf("reconnected for a channel change: %v", got)
+	}
+
+	// a new address takes effect right away instead of retrying the old one
+	s.Server = "192.0.2.9"
+	if err := m.SaveServer("znc", "znc", s); err != nil {
+		t.Fatal(err)
+	}
+	got := d.addrs()
+	if len(got) != 2 || got[1] != "192.0.2.9:7000" {
+		t.Fatalf("dialed %v", got)
+	}
+	if names := m.Names(); len(names) != 1 || names[0] != "znc" {
+		t.Fatalf("clients %v", names)
+	}
+
+	// renaming moves the running client to the new name
+	if err := m.SaveServer("znc", "bnc", s); err != nil {
+		t.Fatal(err)
+	}
+	if names := m.Names(); len(names) != 1 || names[0] != "bnc" {
+		t.Fatalf("after rename %v", names)
+	}
+}
+
+func TestSaveServerLeavesStoppedServersAlone(t *testing.T) {
+	cfg := tempCfg(t)
+	m, d := newTestManager(t, cfg)
+	s := config.Server{Nickname: "pepe", Server: "192.0.2.1", Port: 7000}
+	m.SaveServer("", "znc", s)
+	s.Server = "192.0.2.9"
+	if err := m.SaveServer("znc", "znc", s); err != nil {
+		t.Fatal(err)
+	}
+	if got := d.addrs(); len(got) != 0 || len(m.Names()) != 0 {
+		t.Fatalf("started a stopped server: %v %v", got, m.Names())
+	}
+}

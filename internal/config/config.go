@@ -40,6 +40,22 @@ type Server struct {
 	AutoConnect                   *bool    `toml:"autoconnect,omitempty"`
 }
 
+// SameConnection reports whether a and b connect the same way: same
+// address, TLS, identity and credentials. Channels and autoconnect do not
+// count, since changing them never needs a new connection.
+func SameConnection(a, b Server) bool {
+	sasl := func(s Server) SASLPlain {
+		if s.SASL == nil || s.SASL.Plain == nil {
+			return SASLPlain{}
+		}
+		return *s.SASL.Plain
+	}
+	return a.Addr() == b.Addr() && a.TLS() == b.TLS() &&
+		a.DangerouslyAcceptInvalidCerts == b.DangerouslyAcceptInvalidCerts &&
+		a.Nickname == b.Nickname && a.Username == b.Username && a.Real() == b.Real() &&
+		a.Password == b.Password && sasl(a) == sasl(b)
+}
+
 // Auto reports whether the server connects at startup (default true).
 func (s Server) Auto() bool { return s.AutoConnect == nil || *s.AutoConnect }
 
