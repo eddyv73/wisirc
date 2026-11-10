@@ -22,11 +22,18 @@ type Sender interface {
 }
 
 // Networks is the connection manager the UI drives.
+// Reloaded is what reloading config.toml did to the connections.
+type Reloaded struct {
+	Started   []string // new servers that connect
+	Restarted []string // reconnecting with changed settings
+	Stopped   []string // removed from the config
+}
+
 type Networks interface {
 	Get(name string) (Sender, bool)
 	Connect(arg string) (name string, err error)
 	Disconnect(name string)
-	Reload(cfg *config.Config) (started []string)
+	Reload(cfg *config.Config, skip func(name string) bool) Reloaded
 	Names() []string
 	Config() *config.Config
 	IsAdHoc(name string) bool
@@ -149,6 +156,7 @@ type Model struct {
 	tintBefore  string            // color to restore when the color menu is cancelled
 	disabled    map[string]bool   // servers switched off (Disabled)
 	update      updateState       // newer release found on GitHub
+	updater     Updater           // from Deps; dropped while [updates] check = false
 	flash       string            // short notice in the status bar, cleared on the next input
 	frame       int               // animation frame for the status bar
 	ticking     bool              // an animation tick is scheduled
@@ -183,6 +191,7 @@ func New(d Deps) *Model {
 	for name, hex := range d.ServerColors {
 		m.tints[name] = hex
 	}
+	m.updater = d.Updates
 	m.disabled = map[string]bool{}
 	for _, name := range d.Disabled {
 		m.disabled[name] = true
@@ -403,13 +412,35 @@ func (m *Model) reloadConfig(execErr error) {
 		m.errorLine(err.Error())
 		return
 	}
+	prev := m.d.Cfg
 	m.d.Cfg = cfg
 	for _, w := range warns {
 		m.errorLine("config: " + w)
 	}
-	for _, name := range m.d.Nets.Reload(cfg) {
+	r := m.d.Nets.Reload(cfg, func(name string) bool { return m.disabled[name] })
+	for _, name := range r.Started {
 		m.st.AddNetwork(name)
 		m.info(i18n.T("Connecting to %s", name))
+	}
+	for _, name := range r.Restarted {
+		m.info(i18n.T("Reconnecting to %s with the new settings", name))
+	}
+	for _, name := range r.Stopped {
+		m.info(i18n.T("%s is no longer in the config: disconnected", name))
+	}
+	for _, name := range append(r.Started, r.Restarted...) {
+		if cfg.Servers[name].DangerouslyAcceptInvalidCerts {
+			m.st.AddLine(state.BufRef{Network: name}, state.Line{Kind: state.LineError, Text: i18n.T("warning: certificate verification disabled")})
+		}
+	}
+	// [theme] applies unless a theme was chosen in the menu (prefs.toml wins)
+	if m.d.ThemeName == "" && (prev == nil || prev.Theme.Name != cfg.Theme.Name) {
+		m.setTheme(themeFor(cfg.Theme.Name))
+	}
+	if cfg.Updates.On() {
+		m.d.Updates = m.updater
+	} else {
+		m.d.Updates, m.update = nil, updateState{}
 	}
 	m.info(i18n.T("Config reloaded"))
 }

@@ -67,7 +67,7 @@ func TestReloadStartsOnlyNew(t *testing.T) {
 	m, _ := newTestManager(t, cfg)
 	m.Start("a", cfg.Servers["a"])
 	cfg2 := &config.Config{Servers: map[string]config.Server{"a": srv("a.example"), "b": srv("b.example")}}
-	if got := m.Reload(cfg2); !reflect.DeepEqual(got, []string{"b"}) {
+	if got := m.Reload(cfg2, nil).Started; !reflect.DeepEqual(got, []string{"b"}) {
 		t.Fatalf("started %v", got)
 	}
 	if got := m.Names(); !reflect.DeepEqual(got, []string{"a", "b"}) {
@@ -332,8 +332,8 @@ func TestSaveServerEditRenameDelete(t *testing.T) {
 func TestReloadSkipsNoAutoconnect(t *testing.T) {
 	m, _ := newTestManager(t, &config.Config{Servers: map[string]config.Server{}})
 	off := false
-	got := m.Reload(&config.Config{Servers: map[string]config.Server{"x": {Server: "x", AutoConnect: &off}}})
-	if len(got) != 0 {
+	got := m.Reload(&config.Config{Servers: map[string]config.Server{"x": {Server: "x", AutoConnect: &off}}}, nil)
+	if len(got.Started) != 0 {
 		t.Fatalf("started %v", got)
 	}
 }

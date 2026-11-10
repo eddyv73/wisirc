@@ -323,6 +323,7 @@ func (m *Model) chooseTheme(name string) {
 		return
 	}
 	m.setTheme(t)
+	m.d.ThemeName = t.name // remembered in prefs.toml: [theme] no longer applies
 	if m.d.SaveTheme != nil {
 		if err := m.d.SaveTheme(t.name); err != nil {
 			m.errorLine(i18n.T("Could not save the theme: %s", err.Error()))

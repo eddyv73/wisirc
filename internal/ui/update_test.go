@@ -22,7 +22,7 @@ func (f *fakeUpdater) Apply(_ context.Context, tag string) (string, error) {
 
 func (h *harness) withUpdater(version, latest string) *fakeUpdater {
 	f := &fakeUpdater{latest: latest}
-	h.m.d.Version, h.m.d.Updates = version, f
+	h.m.d.Version, h.m.d.Updates, h.m.updater = version, f, f
 	return f
 }
 

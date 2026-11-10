@@ -186,7 +186,7 @@ Los nombres de los temas son identificadores y no cambian con el idioma (`dark` 
 
 Los colores de los esquemas conocidos se aclararon donde hacía falta para que todo el texto tenga un contraste de al menos 4.5:1 (WCAG AA); hay un test que lo comprueba. Los temas con fondo propio cambian el fondo de la terminal mientras wisirc está abierto y lo restauran al salir. El tema elegido en el menú se guarda en `~/.config/wisirc/prefs.toml` y gana sobre `[theme]` del config.
 
-Las claves que wisirc no conoce (por ejemplo, de un config de halloy) se ignoran y aparecen como aviso. wisirc nunca modifica tu config. Si lo cambias desde **≡ → Editar config**, se abre `$EDITOR` y al cerrarlo se recarga el archivo y se conectan los servidores nuevos.
+Las claves que wisirc no conoce (por ejemplo, de un config de halloy) se ignoran y aparecen como aviso. wisirc nunca modifica tu config. Si lo cambias desde **≡ → Editar config**, se abre `$EDITOR` y al cerrarlo los cambios se aplican al momento: los servidores nuevos se conectan, los que cambiaron de dirección, puerto, TLS, nick o credenciales se reconectan con los datos nuevos, los que quitaste se desconectan, y `[theme]`, `[notifications]` y `[updates]` toman efecto (un tema elegido en el menú sigue mandando sobre `[theme]`). Volver a activar `[updates] check` después de arrancar con él apagado requiere reiniciar.
 
 > La contraseña se guarda en texto plano. Protege el archivo con `chmod 600 ~/.config/wisirc/config.toml`.
 

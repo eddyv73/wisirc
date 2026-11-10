@@ -37,6 +37,8 @@ type fakeNets struct {
 	connects []string
 	discons  []string
 	none     bool // no networks at all (first run)
+	reloaded Reloaded            // what Reload reports
+	skip     func(string) bool // what Reload was told to skip
 }
 
 func (f *fakeNets) Get(name string) (Sender, bool) {
@@ -63,7 +65,11 @@ func (f *fakeNets) Import(servers map[string]config.Server) (imported, skipped [
 	return imported, skipped, nil
 }
 func (f *fakeNets) Disconnect(name string)             { f.discons = append(f.discons, name) }
-func (f *fakeNets) Reload(cfg *config.Config) []string { return nil }
+func (f *fakeNets) Reload(cfg *config.Config, skip func(string) bool) Reloaded {
+	f.cfg = cfg
+	f.skip = skip
+	return f.reloaded
+}
 func (f *fakeNets) Names() []string {
 	if f.none {
 		return nil

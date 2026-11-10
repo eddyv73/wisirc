@@ -1,9 +1,13 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/charmbracelet/colorprofile"
+	"github.com/eddyv73/wisirc/internal/config"
 )
 
 // 6. an explicit COLORTERM=truecolor wins even inside tmux
@@ -30,5 +34,37 @@ func TestVersionString(t *testing.T) {
 	Version = "dev"
 	if got := versionString(); got == "" {
 		t.Fatal("empty version")
+	}
+}
+
+func TestPrefsChoicesDoNotClobberEachOther(t *testing.T) {
+	cfgPath := filepath.Join(t.TempDir(), "config.toml")
+	f := prefsFile(cfgPath)
+	steps := []error{
+		f.theme("papel"),
+		f.lang("es"),
+		f.color("znc", "#ff8800"),
+		f.color("libera", "#00ff88"),
+		f.disabled([]string{"darkstar"}),
+		f.color("libera", ""), // back to automatic
+	}
+	for i, err := range steps {
+		if err != nil {
+			t.Fatalf("step %d: %v", i, err)
+		}
+	}
+	p := config.LoadPrefs(cfgPath)
+	if p.Theme != "papel" || p.Lang != "es" || !reflect.DeepEqual(p.Disabled, []string{"darkstar"}) ||
+		!reflect.DeepEqual(p.ServerColors, map[string]string{"znc": "#ff8800"}) {
+		t.Fatalf("prefs %+v", p)
+	}
+	if err := f.disabled(nil); err != nil {
+		t.Fatal(err)
+	}
+	if p := config.LoadPrefs(cfgPath); len(p.Disabled) != 0 || p.Theme != "papel" {
+		t.Fatalf("after enabling all: %+v", p)
+	}
+	if _, err := os.Stat(filepath.Join(filepath.Dir(cfgPath), "config.toml")); !os.IsNotExist(err) {
+		t.Fatal("saving prefs wrote config.toml")
 	}
 }

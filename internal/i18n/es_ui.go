@@ -142,6 +142,8 @@ func init() {
 		"%s deleted":                                           "%s borrado",
 		" · applies on reconnect":                              " · se aplica al reconectar",
 		" · reconnecting with the new settings":                " · reconectando con los nuevos datos",
+		"Reconnecting to %s with the new settings":             "Reconectando a %s con los nuevos datos",
+		"%s is no longer in the config: disconnected":          "%s ya no está en la configuración: desconectado",
 		"New server":                                           "Nuevo servidor",
 		"Edit %s":                                              "Editar %s",
 		"  ·  Tab/↓ next · Space toggles · Enter saves · Esc goes back": "  ·  Tab/↓ siguiente · Espacio marca · Enter guarda · Esc vuelve",

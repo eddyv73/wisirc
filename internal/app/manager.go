@@ -122,26 +122,52 @@ func (m *Manager) Disconnect(name string) {
 	e.cancel()
 }
 
-// Reload starts autoconnect servers that are new in cfg and leaves the
-// others alone.
-func (m *Manager) Reload(cfg *config.Config) []string {
+// Reloaded is what Reload did to the running connections.
+type Reloaded = ui.Reloaded
+
+// Reload switches to cfg (config.toml was edited) and brings the running
+// connections in line with it: new autoconnect servers start, servers whose
+// connection settings changed reconnect with them, and servers removed from
+// the config disconnect. Connections made with /connect and servers that
+// are not running are left alone; skip names servers that must not start
+// (disabled ones).
+func (m *Manager) Reload(cfg *config.Config, skip func(string) bool) Reloaded {
+	var r Reloaded
 	m.mu.Lock()
 	old := m.cfg
 	m.cfg = cfg
-	var fresh []string
 	for name, s := range cfg.Servers {
-		_, running := m.clients[name]
+		e, running := m.clients[name]
 		_, known := old.Servers[name]
-		if !running && !known && s.Auto() {
-			fresh = append(fresh, name)
+		switch {
+		case running && !config.SameConnection(e.srv, s):
+			r.Restarted = append(r.Restarted, name)
+		case !running && !known && s.Auto() && (skip == nil || !skip(name)):
+			r.Started = append(r.Started, name)
+		}
+	}
+	for name := range old.Servers {
+		_, kept := cfg.Servers[name]
+		_, adhoc := m.adhoc[name]
+		if _, running := m.clients[name]; running && !kept && !adhoc {
+			r.Stopped = append(r.Stopped, name)
 		}
 	}
 	m.mu.Unlock()
-	sort.Strings(fresh)
-	for _, name := range fresh {
+	sort.Strings(r.Started)
+	sort.Strings(r.Restarted)
+	sort.Strings(r.Stopped)
+	for _, name := range r.Stopped {
+		m.Disconnect(name)
+	}
+	for _, name := range r.Restarted {
+		m.Disconnect(name)
 		m.Start(name, cfg.Servers[name])
 	}
-	return fresh
+	for _, name := range r.Started {
+		m.Start(name, cfg.Servers[name])
+	}
+	return r
 }
 
 // Connect starts a configured server by name, or an ad-hoc server:

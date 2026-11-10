@@ -92,6 +92,7 @@ func main() {
 	if os.Getenv("SSH_TTY") != "" || os.Getenv("SSH_CONNECTION") != "" {
 		copyFn = nil
 	}
+	prefs := prefsFile(*cfgPath)
 	logger := &logs.Logger{Root: logs.DefaultRoot()}
 	defer logger.Close()
 	model := ui.New(ui.Deps{
@@ -108,37 +109,14 @@ func main() {
 		ThemeName:        config.LoadPrefs(*cfgPath).Theme,
 		StartOnDashboard: true,
 		ServerColors:     config.LoadPrefs(*cfgPath).ServerColors,
-		SaveServerColor: func(name, hex string) error {
-			p := config.LoadPrefs(*cfgPath)
-			if p.ServerColors == nil {
-				p.ServerColors = map[string]string{}
-			}
-			if hex == "" {
-				delete(p.ServerColors, name)
-			} else {
-				p.ServerColors[name] = hex
-			}
-			return config.SavePrefs(*cfgPath, p)
-		},
-		Version:  versionString(),
-		Updates:  updater(cfg),
-		Disabled: config.LoadPrefs(*cfgPath).Disabled,
-		SaveDisabled: func(names []string) error {
-			p := config.LoadPrefs(*cfgPath)
-			p.Disabled = names
-			return config.SavePrefs(*cfgPath, p)
-		},
-		SaveLang: func(code string) error {
-			p := config.LoadPrefs(*cfgPath)
-			p.Lang = code
-			return config.SavePrefs(*cfgPath, p)
-		},
-		SaveTheme: func(name string) error {
-			p := config.LoadPrefs(*cfgPath)
-			p.Theme = name
-			return config.SavePrefs(*cfgPath, p)
-		},
-		Warnings: warnings,
+		SaveServerColor:  prefs.color,
+		Version:          versionString(),
+		Updates:          updater(cfg),
+		Disabled:         config.LoadPrefs(*cfgPath).Disabled,
+		SaveDisabled:     prefs.disabled,
+		SaveLang:         prefs.lang,
+		SaveTheme:        prefs.theme,
+		Warnings:         warnings,
 	})
 	var opts []tea.ProgramOption
 	if p, ok := colorOverride(os.Getenv); ok {
@@ -148,6 +126,41 @@ func main() {
 		fmt.Fprintln(os.Stderr, "wisirc:", err)
 		os.Exit(1)
 	}
+}
+
+// prefsFile saves the choices made in the UI to prefs.toml next to the
+// config. Each save rereads the file so it only changes its own key.
+type prefsFile string
+
+func (f prefsFile) change(edit func(*config.Prefs)) error {
+	p := config.LoadPrefs(string(f))
+	edit(&p)
+	return config.SavePrefs(string(f), p)
+}
+
+func (f prefsFile) theme(name string) error {
+	return f.change(func(p *config.Prefs) { p.Theme = name })
+}
+
+func (f prefsFile) lang(code string) error {
+	return f.change(func(p *config.Prefs) { p.Lang = code })
+}
+
+func (f prefsFile) disabled(names []string) error {
+	return f.change(func(p *config.Prefs) { p.Disabled = names })
+}
+
+func (f prefsFile) color(name, hex string) error {
+	return f.change(func(p *config.Prefs) {
+		if p.ServerColors == nil {
+			p.ServerColors = map[string]string{}
+		}
+		if hex == "" {
+			delete(p.ServerColors, name)
+		} else {
+			p.ServerColors[name] = hex
+		}
+	})
 }
 
 func halloyLoader(path string, ok bool) func() (map[string]config.Server, []string, error) {
