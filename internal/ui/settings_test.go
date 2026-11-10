@@ -50,7 +50,7 @@ func TestReloadReportsWhatChanged(t *testing.T) {
   server = "192.0.2.9"
   dangerously_accept_invalid_certs = true
 `)
-	all := h.view() + h.netLines(h.m.st.Active.Network)
+	all := h.netLines(h.m.st.Active.Network)
 	for _, want := range []string{"Connecting to nueva", "Reconnecting to znc with the new settings", "vieja is no longer in the config", "Config reloaded"} {
 		if !strings.Contains(all, want) {
 			t.Errorf("missing %q in:\n%s", want, all)
@@ -131,7 +131,8 @@ func TestReloadBadConfigKeepsCurrent(t *testing.T) {
 	if h.m.d.Cfg != before {
 		t.Fatal("a broken config replaced the working one")
 	}
-	if v := h.view(); !strings.Contains(v, "config.toml") && !strings.Contains(v, "line") {
-		t.Fatalf("no error shown:\n%s", v)
+	// read the buffer, not the screen: a long temp path wraps differently per OS
+	if got := h.netLines(h.m.st.Active.Network); !strings.Contains(got, "config.toml:2:") {
+		t.Fatalf("no error shown: %q", got)
 	}
 }

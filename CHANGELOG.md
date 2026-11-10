@@ -1,13 +1,14 @@
 # Changelog
 
-## v0.4.1-rc.3
+## v0.4.1-rc.4
 
 - Editing `config.toml` from ≡ → Edit config now applies every change
   without restarting: servers with a new address, port, TLS, nick or
   credentials reconnect, removed servers disconnect, new servers stay off if
   you disabled them, and `[theme]` (unless a theme was chosen in the menu),
   `[notifications]` and `[updates] check = false` take effect at once.
-- Tests that change each setting and check what it does.
+- Tests that change each setting and check what it does. (v0.4.1-rc.3 was
+  tagged but not released: one of these tests depended on the screen width.)
 
 ## v0.4.1-rc.2
 
