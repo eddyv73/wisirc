@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.4.1
+
+Everything from v0.4.1-rc.1 to rc.5, now stable:
+
+- **First-run setup:** the first time wisirc runs it asks for the language,
+  your nick and real name, a theme (previewed as you move) and a first
+  server: Libera.Chat, import from Halloy, your own server or none for now.
+  Esc skips it. The nick and real name are kept in `prefs.toml` and fill in
+  every new server and `/connect`. The first run no longer writes an example
+  `config.toml` with Libera.Chat.
+- **`/export halloy [file]`** (`/exportar`) writes your saved servers as
+  Halloy `[servers.*]` tables, passwords and SASL included. Disabled servers
+  get `autoconnect = false`; the file is readable only by you and is never
+  overwritten.
+- **Fixed: saved changes now apply right away.** Editing a server's
+  address, port, TLS, nick or credentials in the Servers screen reconnects
+  it with the new settings (before, it kept retrying the old address until
+  a restart). Editing `config.toml` from ≡ → Edit config applies every
+  change without restarting: changed servers reconnect, removed ones
+  disconnect, and `[theme]`, `[notifications]` and `[updates]` take effect.
+- **Updates:** wisirc tells you when a new release is out (status bar and ≡
+  menu) and `/update` installs it, checked against `SHA256SUMS`. Homebrew
+  installs are told to `brew upgrade`. `[updates] check = false` turns it
+  off.
+
 ## v0.4.1-rc.5
 
 - The first time wisirc runs, a short setup asks for the language, your nick
