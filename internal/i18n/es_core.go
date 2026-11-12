@@ -7,7 +7,6 @@ func init() {
 		// cmd/wisirc
 		"path to the config file": "ruta del archivo de configuración",
 		"print the version":       "muestra la versión",
-		"Created an example config at %s. Edit it and run wisirc again.":                                                    "Creé un config de ejemplo en %s. Edítalo y vuelve a ejecutar wisirc.",
 		"Found %d new server(s) in your Halloy config: ≡ → Servers → [Import from Halloy] to bring them in with one click.": "Encontré %d servidor(es) nuevos en tu config de Halloy: ≡ → Servidores → [Importar de Halloy] para traerlos con un clic.",
 
 		// irc

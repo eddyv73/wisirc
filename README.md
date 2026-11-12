@@ -92,7 +92,7 @@ make test
 
 ## Quick start
 
-1. Run `wisirc`. It opens on the dashboard; press **Esc** to go to the chat.
+1. Run `wisirc`. The first time, a short setup asks for your language, nick, theme and first server (Libera.Chat, your Halloy servers, your own, or none). After that it opens on the dashboard; press **Esc** to go to the chat.
 2. Press **F1** (or click **≡**) for the main menu: connect, servers, themes, language, help.
 3. Connect with `/connect irc.libera.chat -nick yournick -join #linux`, and say **Yes** when wisirc offers to save it.
 4. Switch channels with a click or **Alt+1…9**; right-click anything for its menu.

@@ -12,6 +12,11 @@ type Prefs struct {
 	Theme string `toml:"theme,omitempty"`
 	Lang  string `toml:"lang,omitempty"`
 
+	// Nick and Realname are the identity from the first-run setup: the
+	// default for /connect and for new servers.
+	Nick     string `toml:"nick,omitempty"`
+	Realname string `toml:"realname,omitempty"`
+
 	// ServerColors maps a server name to the "#rrggbb" picked for it.
 	ServerColors map[string]string `toml:"server_colors,omitempty"`
 
@@ -36,7 +41,7 @@ func LoadPrefs(cfgPath string) Prefs {
 // SavePrefs replaces prefs.toml, atomically and mode 0600.
 func SavePrefs(cfgPath string, p Prefs) error {
 	var buf bytes.Buffer
-	buf.WriteString("# Preferences chosen inside wisirc (theme, language, server colors, disabled servers). They win over config.toml.\n\n")
+	buf.WriteString("# Preferences chosen inside wisirc (identity, theme, language, server colors, disabled servers). They win over config.toml.\n\n")
 	if err := toml.NewEncoder(&buf).Encode(p); err != nil {
 		return err
 	}

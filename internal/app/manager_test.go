@@ -456,3 +456,24 @@ func TestSaveServerLeavesStoppedServersAlone(t *testing.T) {
 		t.Fatalf("started a stopped server: %v %v", got, m.Names())
 	}
 }
+
+// The identity from the first-run setup is the default for /connect; without
+// one, the first configured server's nick still is.
+func TestConnectAdHocUsesIdentity(t *testing.T) {
+	cfg := &config.Config{Servers: map[string]config.Server{"b": {Nickname: "bob", Server: "irc.example.net"}}}
+	m, d := newTestManager(t, cfg)
+	if _, err := m.Connect("irc.example.org 6697"); err != nil {
+		t.Fatal(err)
+	}
+	if o := d.opts[len(d.opts)-1]; o.Nick != "bob" {
+		t.Fatalf("without identity: nick %q", o.Nick)
+	}
+	m.SetIdentity("alice", "Alice A.")
+	if _, err := m.Connect("irc.example.com 6697 -name other"); err != nil {
+		t.Fatal(err)
+	}
+	o := d.opts[len(d.opts)-1]
+	if o.Nick != "alice" || o.User != "alice" || o.Real != "Alice A." {
+		t.Fatalf("with identity: %+v", o)
+	}
+}

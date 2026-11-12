@@ -51,6 +51,13 @@ func (m *Model) chatNickAt(x, y int) (string, bool) {
 
 func (m *Model) handleClick(ms tea.Mouse) tea.Cmd {
 	m.flash, m.sel = "", nil
+	if m.setup != nil {
+		// the setup is modal: clicks elsewhere do nothing
+		if ms.Button == tea.MouseLeft && m.Layout().Hit(ms.X, ms.Y) == ZoneChat {
+			return m.setupClick(ms.X, ms.Y)
+		}
+		return nil
+	}
 	if m.menu != nil {
 		menu := *m.menu
 		m.menu = nil

@@ -92,7 +92,7 @@ make test
 
 ## Primeros pasos
 
-1. Ejecuta `wisirc`. Abre en el panel; presiona **Esc** para ir al chat.
+1. Ejecuta `wisirc`. La primera vez, una configuración corta te pide idioma, nick, tema y primer servidor (Libera.Chat, tus servidores de Halloy, uno propio o ninguno). Después abre en el panel; presiona **Esc** para ir al chat.
 2. Presiona **F1** (o haz clic en **≡**) para el menú principal: conectar, servidores, temas, idioma, ayuda.
 3. Conéctate con `/connect irc.libera.chat -nick tunick -join #linux` y responde **Sí** cuando wisirc ofrezca guardarlo.
 4. Cambia de canal con un clic o **Alt+1…9**; clic derecho en cualquier cosa para su menú.

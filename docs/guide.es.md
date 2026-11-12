@@ -4,6 +4,7 @@
 
 Todo lo que hace wisirc, por tema. Volver al [README](../README.es.md) · [in English](guide.md) · `man wisirc` tiene la versión corta (en inglés).
 
+[👋 La primera vez](#la-primera-vez) ·
 [⌨️ Atajos de teclado y comandos](#atajos-de-teclado-y-comandos) ·
 [🖱️ Mouse](#mouse) ·
 [🔌 Conectarse a un servidor](#conectarse-a-un-servidor) ·
@@ -16,6 +17,19 @@ Todo lo que hace wisirc, por tema. Volver al [README](../README.es.md) · [in En
 [🌎 Idioma](#idioma) ·
 [🗂️ Logs y menciones](#logs-y-menciones) ·
 [⬆️ Actualizaciones](#actualizaciones)
+
+<a id="la-primera-vez"></a>
+
+## 👋 La primera vez
+
+La primera vez que ejecutas wisirc (todavía no hay `config.toml`) se abre una configuración corta, con mouse o teclado:
+
+1. **Idioma**: English o Español, elegido según tu sistema; la pantalla cambia mientras te mueves.
+2. **Quién eres**: tu nick (sugerido a partir de tu usuario del sistema) y un nombre real opcional. Se guardan como tu identidad en `prefs.toml` y rellenan `/connect` y cada servidor nuevo.
+3. **Tema**: cada tema se ve al pasar por la lista.
+4. **Primer servidor**: importar tus servidores de Halloy (aparece primero si wisirc encuentra un config de Halloy), Libera.Chat entrando a `#wisirc`, tu propio servidor (abre el formulario con tu nick ya puesto) o ninguno.
+
+**Enter** avanza, **Shift+Tab** regresa y **Esc** la salta sin guardar nada. No vuelve a aparecer: cambia lo que quieras después desde ≡ (`F1`).
 
 <a id="atajos-de-teclado-y-comandos"></a>
 
@@ -33,7 +47,7 @@ Todo lo que hace wisirc, por tema. Volver al [README](../README.es.md) · [in En
 | `Esc` | Cerrar menú o panel |
 | `Ctrl+C` | Salir |
 
-Comandos: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/tema`, `/lang`, `/update`, `/help`. Para enviar un texto que empieza por `/`, escribe `//`.
+Comandos: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/tema`, `/lang`, `/update`, `/exportar`, `/help`. Para enviar un texto que empieza por `/`, escribe `//`.
 
 <p align="right"><a href="#top">↑</a></p>
 
@@ -119,7 +133,9 @@ Si usas [Halloy](https://halloy.chat), wisirc encuentra su config (`~/Library/Ap
 
 Se importan nick, usuario, realname, host, puerto, TLS (en Halloy viene activado por defecto), certificados inválidos, canales, `password`, `password_file` y SASL PLAIN (también con `password_file`). Por seguridad `password_command` **no se ejecuta**; wisirc te avisa para que pongas esa clave a mano. `nick_password` y SASL EXTERNAL todavía no están soportados y también se avisan.
 
-La primera vez que abres wisirc sin config, si hay un Halloy en el equipo, arranca directamente en esa pantalla.
+La primera vez que ejecutas wisirc, la [configuración inicial](#la-primera-vez) ofrece esta importación como primer servidor cuando encuentra un config de Halloy.
+
+Para ir en sentido contrario, `/exportar halloy` (o `/export halloy`) escribe tus servidores guardados como config de Halloy en `halloy-export.toml`, junto a tu config de wisirc, o en el archivo que indiques: `/exportar halloy ~/servidores-halloy.toml`. Incluye nick, usuario, realname, host, puerto, TLS, certificados inválidos, canales, la contraseña del servidor y SASL PLAIN; los servidores que desactivaste salen con `autoconnect = false`. Las conexiones hechas con `/connect` que nunca guardaste no se exportan. El archivo lleva tus contraseñas en texto plano, así que se crea legible solo para ti, y wisirc nunca sobrescribe un archivo que ya exista (tampoco el config de Halloy): copia tú sus tablas `[servers.*]` al `config.toml` de Halloy.
 
 <p align="right"><a href="#top">↑</a></p>
 
@@ -127,7 +143,7 @@ La primera vez que abres wisirc sin config, si hay un Halloy en el equipo, arran
 
 ## ⚙️ Archivo de configuración
 
-El archivo está en `~/.config/wisirc/config.toml` (respeta `$XDG_CONFIG_HOME`). Para usar otro: `wisirc --config <ruta>`. La primera vez que ejecutas wisirc se crea un ejemplo.
+El archivo está en `~/.config/wisirc/config.toml` (respeta `$XDG_CONFIG_HOME`). Para usar otro: `wisirc --config <ruta>`. La primera vez se crea sin servidores, con ejemplos comentados; los servidores que agregas van a `servers.toml`.
 
 ```toml
 [servers.examplenet]

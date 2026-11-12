@@ -113,31 +113,3 @@ func TestDefaultPathXDG(t *testing.T) {
 		t.Fatalf("got %q want %q", got, want)
 	}
 }
-
-func TestEnsureExample(t *testing.T) {
-	p := filepath.Join(t.TempDir(), "sub", "config.toml")
-	created, err := EnsureExample(p)
-	if err != nil || !created {
-		t.Fatalf("created=%v err=%v", created, err)
-	}
-	cfg, _, err := Load(p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(cfg.Servers) < 1 {
-		t.Fatal("example has no servers")
-	}
-	st, _ := os.Stat(p)
-	if st.Mode().Perm() != 0o600 {
-		t.Fatalf("mode %v", st.Mode().Perm())
-	}
-	before, _ := os.ReadFile(p)
-	created, err = EnsureExample(p)
-	if err != nil || created {
-		t.Fatalf("second call created=%v err=%v", created, err)
-	}
-	after, _ := os.ReadFile(p)
-	if string(before) != string(after) {
-		t.Fatal("file changed")
-	}
-}

@@ -38,28 +38,21 @@ func main() {
 		return
 	}
 
-	// with a Halloy config around, the first run starts right away and offers
-	// to import its servers instead of asking to edit an example
 	halloyPath, haveHalloy := halloy.Find()
-	ensure := config.EnsureExample
-	if haveHalloy {
-		ensure = config.EnsureStarter
-	}
 	// language: the one chosen in the menu, else the system locale
-	lang := config.LoadPrefs(*cfgPath).Lang
+	saved := config.LoadPrefs(*cfgPath)
+	lang := saved.Lang
 	if lang == "" {
 		lang = i18n.Detect(os.Getenv)
 	}
 	i18n.SetLang(lang)
 
-	created, err := ensure(*cfgPath)
+	// the first run (no config.toml yet) writes a config without servers and
+	// opens the setup, which asks for the language, nick, theme and first server
+	firstRun, err := config.EnsureStarter(*cfgPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "wisirc:", err)
 		os.Exit(1)
-	}
-	if created && !haveHalloy {
-		fmt.Println(i18n.T("Created an example config at %s. Edit it and run wisirc again.", *cfgPath))
-		return
 	}
 
 	cfg, warnings, err := config.Load(*cfgPath)
@@ -72,6 +65,7 @@ func main() {
 	defer cancel()
 
 	mgr := app.NewManager(ctx, cfg, nil)
+	mgr.SetIdentity(saved.Nick, saved.Realname)
 	disabled := map[string]bool{}
 	for _, n := range config.LoadPrefs(*cfgPath).Disabled {
 		disabled[n] = true
@@ -93,6 +87,10 @@ func main() {
 		copyFn = nil
 	}
 	prefs := prefsFile(*cfgPath)
+	saveIdentity := func(nick, realname string) error {
+		mgr.SetIdentity(nick, realname)
+		return prefs.identity(nick, realname)
+	}
 	logger := &logs.Logger{Root: logs.DefaultRoot()}
 	defer logger.Close()
 	model := ui.New(ui.Deps{
@@ -108,6 +106,10 @@ func main() {
 		Hints:            halloyHints(halloyPath, haveHalloy, cfg),
 		ThemeName:        config.LoadPrefs(*cfgPath).Theme,
 		StartOnDashboard: true,
+		Setup:            firstRun,
+		Nick:             saved.Nick,
+		Realname:         saved.Realname,
+		SaveIdentity:     saveIdentity,
 		ServerColors:     config.LoadPrefs(*cfgPath).ServerColors,
 		SaveServerColor:  prefs.color,
 		Version:          versionString(),
@@ -144,6 +146,10 @@ func (f prefsFile) theme(name string) error {
 
 func (f prefsFile) lang(code string) error {
 	return f.change(func(p *config.Prefs) { p.Lang = code })
+}
+
+func (f prefsFile) identity(nick, realname string) error {
+	return f.change(func(p *config.Prefs) { p.Nick, p.Realname = nick, realname })
 }
 
 func (f prefsFile) disabled(names []string) error {

@@ -261,16 +261,29 @@ func (m *Model) running(name string) bool {
 }
 
 // adminAction runs a list-view action on the selected server.
+// newServer is the blank server for [+ New]: the identity from the setup,
+// else the nick of the first configured server.
+func (m *Model) newServer() config.Server {
+	s := config.Server{Nickname: m.d.Nick, Username: m.d.Nick, Port: 6697}
+	if s.Nickname != "" {
+		return s
+	}
+	if cfg := m.d.Nets.Config(); cfg != nil {
+		names := make([]string, 0, len(cfg.Servers))
+		for n := range cfg.Servers {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		if len(names) > 0 {
+			s.Nickname = cfg.Servers[names[0]].Nickname
+		}
+	}
+	return s
+}
+
 func (m *Model) adminAction(act string) tea.Cmd {
 	if act == "new" {
-		nick := ""
-		if cfg := m.d.Nets.Config(); cfg != nil {
-			for _, s := range cfg.Servers {
-				nick = s.Nickname
-				break
-			}
-		}
-		m.admin.form = newServerForm("", config.Server{Nickname: nick, Port: 6697})
+		m.admin.form = newServerForm("", m.newServer())
 		m.admin.msg = ""
 		return nil
 	}

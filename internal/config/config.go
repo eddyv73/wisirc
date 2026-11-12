@@ -206,11 +206,8 @@ func DefaultPath() string {
 	return filepath.Join(base, "wisirc", "config.toml")
 }
 
-// EnsureExample writes the example config if path does not exist.
-func EnsureExample(path string) (bool, error) { return ensure(path, exampleConfig) }
-
-// EnsureStarter writes a config without servers if path does not exist, for
-// a first run that imports them instead (from Halloy).
+// EnsureStarter writes a config without servers if path does not exist: on
+// a first run the setup adds the first server (to servers.toml).
 func EnsureStarter(path string) (bool, error) { return ensure(path, starterConfig) }
 
 func ensure(path, content string) (bool, error) {

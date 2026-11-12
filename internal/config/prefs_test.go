@@ -51,3 +51,13 @@ func TestPrefsDisabledServers(t *testing.T) {
 		t.Fatalf("got %q", got)
 	}
 }
+
+func TestPrefsIdentity(t *testing.T) {
+	p := writeTemp(t, userExample)
+	if err := SavePrefs(p, Prefs{Nick: "alice", Realname: "Alice A."}); err != nil {
+		t.Fatal(err)
+	}
+	if got := LoadPrefs(p); got.Nick != "alice" || got.Realname != "Alice A." {
+		t.Fatalf("got %+v", got)
+	}
+}

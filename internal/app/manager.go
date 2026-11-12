@@ -35,6 +35,8 @@ type Manager struct {
 	cfg     *config.Config
 	clients map[string]*entry
 	adhoc   map[string]config.Server // started with /connect options, not saved
+
+	nick, realname string // identity from the first-run setup; see SetIdentity
 }
 
 var _ ui.Networks = (*Manager)(nil)
@@ -432,6 +434,11 @@ func (m *Manager) adHoc(fields []string) (config.Server, string, error) {
 	if srv.Nickname == "" {
 		srv.Nickname = m.defaultNick()
 	}
+	if srv.Realname == "" {
+		m.mu.Lock()
+		srv.Realname = m.realname
+		m.mu.Unlock()
+	}
 	if srv.Username == "" {
 		srv.Username = srv.Nickname
 	}
@@ -443,10 +450,21 @@ func (m *Manager) adHoc(fields []string) (config.Server, string, error) {
 	return srv, name, nil
 }
 
-// defaultNick is the nickname of the first configured server, or "wisirc".
+// SetIdentity sets the nick and realname /connect uses when none is given.
+func (m *Manager) SetIdentity(nick, realname string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.nick, m.realname = nick, realname
+}
+
+// defaultNick is the identity's nick, else the nickname of the first
+// configured server, else "wisirc".
 func (m *Manager) defaultNick() string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.nick != "" {
+		return m.nick
+	}
 	names := make([]string, 0, len(m.cfg.Servers))
 	for n := range m.cfg.Servers {
 		names = append(names, n)

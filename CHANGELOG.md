@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.4.1-rc.5
+
+- The first time wisirc runs, a short setup asks for the language, your nick
+  and real name, a theme (previewed as you move) and a first server:
+  Libera.Chat, import from Halloy, your own server or none for now. Esc
+  skips it. The nick and real name are kept in `prefs.toml` and fill in
+  every new server and `/connect`.
+- The first run no longer writes an example `config.toml` with Libera.Chat:
+  it starts empty and the setup adds the server you pick.
+- `/export halloy [file]` (`/exportar`) writes your saved servers as Halloy
+  `[servers.*]` tables, passwords and SASL included, ready to paste into
+  Halloy's `config.toml`. Disabled servers get `autoconnect = false`. The
+  file is created readable only by you and is never overwritten (default
+  `halloy-export.toml` next to `config.toml`).
+
 ## v0.4.1-rc.4
 
 - Editing `config.toml` from ≡ → Edit config now applies every change

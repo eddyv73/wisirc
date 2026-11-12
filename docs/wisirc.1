@@ -81,6 +81,12 @@ The usual IRC commands.
 .PP
 .BR /theme " (" /tema ") [\fIname\fR], " /lang " (" /idioma ") [\fBen\fR|\fBes\fR], " /panel ", " /help
 .PP
+.BR /export " (" /exportar ") " halloy " [\fIfile\fR]"
+.br
+Writes the saved servers as a Halloy config, passwords included, to
+\fIfile\fR or to \fIhalloy-export.toml\fR next to the config. The file is
+created with mode 0600 and an existing file is never replaced.
+.PP
 .BR /update " (" /actualizar )
 .br
 Installs the newest release over this binary (checked against its
@@ -96,7 +102,8 @@ Configuration written by hand.
 Servers saved or edited from the Servers screen.
 .TP
 .I ~/.config/wisirc/prefs.toml
-Theme, language, server colors and disabled servers chosen in the menus.
+Identity (nick and real name from the first-run setup), theme, language,
+server colors and disabled servers chosen in the menus.
 .TP
 .I ~/.local/share/wisirc/logs/
 One folder per server and buffer, one file per day.

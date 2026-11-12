@@ -68,7 +68,14 @@ type Deps struct {
 	Hints  []string // startup tips for the status buffer
 
 	StartOnDashboard bool // open the dashboard (F2) at startup
-	Warnings         []string
+
+	// Setup opens the first-run setup (language, nick, theme, first server):
+	// there was no config.toml before this run.
+	Setup        bool
+	Nick         string                            // identity from that setup; default for new servers
+	Realname     string                            // optional, saved with Nick
+	SaveIdentity func(nick, realname string) error // remembers the identity (prefs.toml)
+	Warnings     []string
 }
 
 type eventMsg irc.Event
@@ -147,6 +154,7 @@ type Model struct {
 	drag    dragKind
 	sel     *selection
 	admin   *adminScreen
+	setup   *setupScreen // first-run setup, over everything else
 	dash    *dashScreen
 	asked   map[string]bool // ad-hoc connections already offered for saving
 
@@ -197,7 +205,9 @@ func New(d Deps) *Model {
 		m.disabled[name] = true
 	}
 	m.addHints(d.Hints)
-	if len(names) == 0 && d.Halloy != nil {
+	if d.Setup {
+		m.setup = newSetup(d, m.theme.name)
+	} else if len(names) == 0 && d.Halloy != nil {
 		// first run next to Halloy: the import button is one click away
 		m.showServers()
 		m.adminNote(i18n.T("Found your Halloy config: press [Import from Halloy] or the i key"), false)
@@ -223,7 +233,7 @@ func (m *Model) State() *state.State { return m.st }
 // Layout returns the current screen geometry.
 func (m *Model) Layout() Layout {
 	l := ComputeLayout(m.w, m.h, m.sidebarW, m.nickW)
-	if (m.admin != nil || m.dash != nil) && l.Nicklist.W > 0 {
+	if (m.admin != nil || m.dash != nil || m.setup != nil) && l.Nicklist.W > 0 {
 		// the Servers screen uses the nicklist's columns too
 		extra := l.Nicklist.W + 1
 		l.Chat.W += extra
@@ -288,6 +298,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.dashTick()
 		return m, animTick()
 	case tea.PasteMsg:
+		if m.setup != nil {
+			return m, m.setupInput(msg)
+		}
 		if m.admin != nil && m.admin.form != nil {
 			return m, m.formInput(msg)
 		}

@@ -31,6 +31,7 @@ const (
 	Lang
 	Dashboard
 	Update
+	Export
 	Error
 )
 
@@ -231,6 +232,13 @@ func Parse(input string, ctx Context) Action {
 		return Action{Kind: Theme, Arg: rest}
 	case "update", "actualizar":
 		return Action{Kind: Update}
+	case "export", "exportar":
+		// only Halloy for now; Arg is the file, empty for the default one
+		format, file, _ := strings.Cut(rest, " ")
+		if !strings.EqualFold(format, "halloy") {
+			return usage(i18n.T("/export halloy [file]"))
+		}
+		return Action{Kind: Export, Arg: strings.TrimSpace(file)}
 	}
 	return errorf(i18n.T("Unknown command: /%s", name))
 }

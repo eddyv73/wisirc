@@ -43,6 +43,7 @@ func TestPrefsChoicesDoNotClobberEachOther(t *testing.T) {
 	steps := []error{
 		f.theme("papel"),
 		f.lang("es"),
+		f.identity("alice", "Alice A."),
 		f.color("znc", "#ff8800"),
 		f.color("libera", "#00ff88"),
 		f.disabled([]string{"darkstar"}),
@@ -54,7 +55,7 @@ func TestPrefsChoicesDoNotClobberEachOther(t *testing.T) {
 		}
 	}
 	p := config.LoadPrefs(cfgPath)
-	if p.Theme != "papel" || p.Lang != "es" || !reflect.DeepEqual(p.Disabled, []string{"darkstar"}) ||
+	if p.Theme != "papel" || p.Lang != "es" || p.Nick != "alice" || p.Realname != "Alice A." || !reflect.DeepEqual(p.Disabled, []string{"darkstar"}) ||
 		!reflect.DeepEqual(p.ServerColors, map[string]string{"znc": "#ff8800"}) {
 		t.Fatalf("prefs %+v", p)
 	}

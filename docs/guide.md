@@ -4,6 +4,7 @@
 
 Everything wisirc does, by topic. Back to the [README](../README.md) · [en español](guide.es.md) · `man wisirc` has the short version.
 
+[👋 First run](#first-run) ·
 [⌨️ Keyboard shortcuts and commands](#keyboard-shortcuts-and-commands) ·
 [🖱️ Mouse](#mouse) ·
 [🔌 Connecting to a server](#connecting-to-a-server) ·
@@ -16,6 +17,19 @@ Everything wisirc does, by topic. Back to the [README](../README.md) · [en espa
 [🌎 Language](#language) ·
 [🗂️ Logs and mentions](#logs-and-mentions) ·
 [⬆️ Updates](#updates)
+
+<a id="first-run"></a>
+
+## 👋 First run
+
+The first time you run wisirc (there is no `config.toml` yet), a short setup opens, with the mouse or the keyboard:
+
+1. **Language**: English or Español, preselected from your system; the screen switches as you move.
+2. **Who you are**: your nick (suggested from your system user) and an optional real name. They are saved as your identity in `prefs.toml` and fill in `/connect` and every new server.
+3. **Theme**: each theme previews as you move through the list.
+4. **First server**: import your Halloy servers (offered first when wisirc finds a Halloy config), Libera.Chat joining `#wisirc`, your own server (opens the server form with your nick filled in), or none.
+
+**Enter** goes on, **Shift+Tab** goes back, **Esc** skips it and saves nothing. It does not show again: change any of it later from ≡ (`F1`).
 
 <a id="keyboard-shortcuts-and-commands"></a>
 
@@ -33,7 +47,7 @@ Everything wisirc does, by topic. Back to the [README](../README.md) · [en espa
 | `Esc` | Close menu or panel |
 | `Ctrl+C` | Quit |
 
-Commands: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/theme`, `/lang`, `/update`, `/help`. To send text that starts with `/`, type `//`.
+Commands: `/join`, `/part`, `/msg`, `/query`, `/me`, `/nick`, `/whois`, `/topic`, `/kick`, `/ban`, `/mode`, `/quit`, `/connect`, `/close`, `/quote`, `/theme`, `/lang`, `/update`, `/export`, `/help`. To send text that starts with `/`, type `//`.
 
 <p align="right"><a href="#top">↑</a></p>
 
@@ -119,7 +133,9 @@ If you use [Halloy](https://halloy.chat), wisirc finds its config (`~/Library/Ap
 
 Imported fields: nick, username, realname, host, port, TLS (on by default in Halloy), invalid certificates, channels, `password`, `password_file` and SASL PLAIN (also with `password_file`). For security, `password_command` is **not executed**; wisirc warns you so you can enter that password by hand. `nick_password` and SASL EXTERNAL are not supported yet and are reported as well.
 
-The first time you open wisirc without a config, if there is a Halloy install on the machine, it starts straight on that screen.
+The first time you run wisirc, the [setup](#first-run) offers this import as the first server when it finds a Halloy config.
+
+To go the other way, `/export halloy` (alias `/exportar`) writes your saved servers as a Halloy config to `halloy-export.toml` next to your wisirc config, or to the file you name: `/export halloy ~/halloy-servers.toml`. It includes nick, username, realname, host, port, TLS, invalid certificates, channels, the server password and SASL PLAIN; servers you disabled get `autoconnect = false`. Connections made with `/connect` and never saved are left out. The file holds your passwords in plain text, so it is created readable only by you, and wisirc never overwrites an existing file (including Halloy's own config): copy its `[servers.*]` tables into Halloy's `config.toml` yourself.
 
 <p align="right"><a href="#top">↑</a></p>
 
@@ -127,7 +143,7 @@ The first time you open wisirc without a config, if there is a Halloy install on
 
 ## ⚙️ Configuration file
 
-The file lives at `~/.config/wisirc/config.toml` (respects `$XDG_CONFIG_HOME`). To use a different one: `wisirc --config <path>`. An example is created the first time you run wisirc.
+The file lives at `~/.config/wisirc/config.toml` (respects `$XDG_CONFIG_HOME`). To use a different one: `wisirc --config <path>`. The first run creates it without servers, with commented examples; the servers you add go to `servers.toml`.
 
 ```toml
 [servers.examplenet]

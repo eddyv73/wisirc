@@ -73,6 +73,22 @@ func TestParse(t *testing.T) {
 				t.Errorf("arg %q", a.Arg)
 			}
 		}},
+		{in: "/export halloy", kind: Export, check: func(t *testing.T, a Action) {
+			if a.Arg != "" {
+				t.Errorf("arg %q", a.Arg)
+			}
+		}},
+		{in: "/exportar Halloy ~/My Files/halloy.toml", kind: Export, check: func(t *testing.T, a Action) {
+			if a.Arg != "~/My Files/halloy.toml" {
+				t.Errorf("arg %q", a.Arg)
+			}
+		}},
+		{in: "/export", kind: Error, check: func(t *testing.T, a Action) {
+			if a.Err != "Usage: /export halloy [file]" {
+				t.Errorf("err %q", a.Err)
+			}
+		}},
+		{in: "/export irssi", kind: Error},
 		{in: "/close", kind: Close},
 		{in: "/help", kind: Help},
 		{in: "/quote PRIVMSG x :y", kind: Send, lines: []string{"PRIVMSG x :y"}},

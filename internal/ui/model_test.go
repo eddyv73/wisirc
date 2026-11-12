@@ -36,8 +36,8 @@ type fakeNets struct {
 	savedAdh []string
 	connects []string
 	discons  []string
-	none     bool // no networks at all (first run)
-	reloaded Reloaded            // what Reload reports
+	none     bool              // no networks at all (first run)
+	reloaded Reloaded          // what Reload reports
 	skip     func(string) bool // what Reload was told to skip
 }
 
@@ -64,7 +64,7 @@ func (f *fakeNets) Import(servers map[string]config.Server) (imported, skipped [
 	}
 	return imported, skipped, nil
 }
-func (f *fakeNets) Disconnect(name string)             { f.discons = append(f.discons, name) }
+func (f *fakeNets) Disconnect(name string) { f.discons = append(f.discons, name) }
 func (f *fakeNets) Reload(cfg *config.Config, skip func(string) bool) Reloaded {
 	f.cfg = cfg
 	f.skip = skip
@@ -111,20 +111,28 @@ type harness struct {
 	copied []string
 }
 
-func newHarness(t *testing.T) *harness {
+func newHarness(t *testing.T) *harness { return newHarnessWith(t, nil) }
+
+// newHarnessWith lets a test change the Deps (and the fake networks) before
+// the model is built, for what New decides at startup.
+func newHarnessWith(t *testing.T, edit func(*Deps, *fakeNets)) *harness {
 	t.Helper()
 	rec := &notifyRec{}
 	lg := &logs.Logger{Root: t.TempDir()}
 	cfg := &config.Config{Servers: map[string]config.Server{netName: {Nickname: "alice", Server: "irc.example.net", Port: 6697}}, Managed: map[string]bool{}}
 	nets := &fakeNets{senders: map[string]*fakeSender{netName: {}}, cfg: cfg, adhoc: map[string]bool{}}
-	m := New(Deps{
+	d := Deps{
 		Cfg: cfg, Nets: nets, Events: make(chan irc.Event), Logger: lg,
 		Notify: func(title, body string) error {
 			rec.titles = append(rec.titles, title)
 			rec.bodies = append(rec.bodies, body)
 			return nil
 		},
-	})
+	}
+	if edit != nil {
+		edit(&d, nets)
+	}
+	m := New(d)
 	h := &harness{t: t, m: m, nets: nets, notes: rec, logger: lg}
 	m.d.Copy = func(text string) error {
 		h.copied = append(h.copied, text)

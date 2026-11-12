@@ -19,6 +19,9 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 	if key != "tab" {
 		m.comp = nil
 	}
+	if m.setup != nil {
+		return m.setupKey(msg)
+	}
 	if m.overlay != nil {
 		return m.overlayKey(msg)
 	}
@@ -284,6 +287,8 @@ func (m *Model) submit() tea.Cmd {
 		m.showHelp()
 	case commands.Update:
 		return m.startUpdate()
+	case commands.Export:
+		m.exportHalloy(a.Arg)
 	case commands.Dashboard:
 		if m.dash == nil {
 			m.toggleDashboard()
@@ -409,6 +414,7 @@ func helpText() []string {
 		i18n.T("Commands"),
 		"  /join /part /msg /query /me /nick /whois /topic /kick /ban",
 		"  /mode /quit /connect /close /quote /help",
+		i18n.T("  /export halloy [file]   your servers as a Halloy config"),
 	}
 }
 

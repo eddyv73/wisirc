@@ -181,6 +181,9 @@ func (m *Model) renderHeader(l Layout) string {
 	if m.dash != nil {
 		title = i18n.T("Dashboard")
 	}
+	if m.setup != nil {
+		title = i18n.T("Setup")
+	}
 	style := lipgloss.NewStyle().Bold(true).Foreground(m.theme.accent)
 	return style.Render(fit(" "+sanitize(title), l.Header.W))
 }
@@ -193,6 +196,9 @@ func (m *Model) renderChat(l Layout) []string {
 	blank := strings.Repeat(" ", max(l.Chat.W, 0))
 	for i := range out {
 		out[i] = blank
+	}
+	if m.setup != nil {
+		return m.renderSetup(l.Chat.W, l.Chat.H)
 	}
 	if m.dash != nil {
 		return m.renderDashboard(l.Chat.W, l.Chat.H)
