@@ -31,11 +31,24 @@ func main() {
 	i18n.SetLang(i18n.Detect(os.Getenv))
 	cfgPath := flag.String("config", config.DefaultPath(), i18n.T("path to the config file"))
 	showVersion := flag.Bool("version", false, i18n.T("print the version"))
+	copyFrom := flag.String("config-copy", "", i18n.T("start with a copy of this wisirc or Halloy config (file or directory)"))
 	flag.Parse()
 
 	if *showVersion {
 		fmt.Printf("wisirc %s\n", versionString())
 		return
+	}
+
+	// --config-copy clones a config before anything reads it, so the copied
+	// prefs (language, theme, identity) apply and the setup is skipped
+	var copied, copyWarnings []string
+	if *copyFrom != "" {
+		msg, warns, err := copyConfig(*copyFrom, *cfgPath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "wisirc:", err)
+			os.Exit(1)
+		}
+		copied, copyWarnings = []string{msg}, warns
 	}
 
 	halloyPath, haveHalloy := halloy.Find()
@@ -103,7 +116,7 @@ func main() {
 		Copy:    copyFn,
 
 		Halloy:           halloyLoader(halloyPath, haveHalloy),
-		Hints:            halloyHints(halloyPath, haveHalloy, cfg),
+		Hints:            append(copied, halloyHints(halloyPath, haveHalloy, cfg)...),
 		ThemeName:        config.LoadPrefs(*cfgPath).Theme,
 		StartOnDashboard: true,
 		Setup:            firstRun,
@@ -118,7 +131,7 @@ func main() {
 		SaveDisabled:     prefs.disabled,
 		SaveLang:         prefs.lang,
 		SaveTheme:        prefs.theme,
-		Warnings:         warnings,
+		Warnings:         append(copyWarnings, warnings...),
 	})
 	var opts []tea.ProgramOption
 	if p, ok := colorOverride(os.Getenv); ok {

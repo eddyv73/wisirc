@@ -3,7 +3,7 @@
 wisirc \- terminal IRC client with mouse, menus and a live dashboard
 .SH SYNOPSIS
 .B wisirc
-[\fB\-\-config\fR \fIfile\fR]
+[\fB\-\-config\fR \fIfile\fR] [\fB\-\-config\-copy\fR \fIpath\fR]
 .br
 .B wisirc \-\-version
 .SH DESCRIPTION
@@ -21,6 +21,15 @@ The interface is available in English and Spanish.
 .BI \-\-config " file"
 Read the configuration from \fIfile\fR instead of
 \fI$XDG_CONFIG_HOME/wisirc/config.toml\fR.
+.TP
+.BI \-\-config\-copy " path"
+Copy an existing config to the config file (and the directory it is in),
+then start with it. \fIpath\fR is a wisirc config directory or
+\fIconfig.toml\fR (its \fIservers.toml\fR and \fIprefs.toml\fR come
+along), or a Halloy \fIconfig.toml\fR or directory (its servers are
+imported into \fIservers.toml\fR). Nothing is ever replaced: if the
+destination already has a config, wisirc prints an error and exits. The
+copies are readable only by their owner. The first-run setup is skipped.
 .TP
 .B \-\-version
 Print the version and exit.

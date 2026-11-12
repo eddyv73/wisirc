@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.2
+
+- `wisirc --config-copy <path>` starts with a copy of a config you already
+  have: a wisirc config directory or `config.toml` (with its `servers.toml`
+  and `prefs.toml`), or a Halloy config, whose servers are imported. It
+  never replaces an existing config, the copies are readable only by you,
+  and the first-run setup is skipped.
+
 ## v0.4.1
 
 Everything from v0.4.1-rc.1 to rc.5, now stable:

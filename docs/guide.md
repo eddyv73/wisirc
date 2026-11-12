@@ -133,7 +133,7 @@ If you use [Halloy](https://halloy.chat), wisirc finds its config (`~/Library/Ap
 
 Imported fields: nick, username, realname, host, port, TLS (on by default in Halloy), invalid certificates, channels, `password`, `password_file` and SASL PLAIN (also with `password_file`). For security, `password_command` is **not executed**; wisirc warns you so you can enter that password by hand. `nick_password` and SASL EXTERNAL are not supported yet and are reported as well.
 
-The first time you run wisirc, the [setup](#first-run) offers this import as the first server when it finds a Halloy config.
+The first time you run wisirc, the [setup](#first-run) offers this import as the first server when it finds a Halloy config. To start straight from a Halloy config somewhere else, use [`wisirc --config-copy`](#config-copy).
 
 To go the other way, `/export halloy` (alias `/exportar`) writes your saved servers as a Halloy config to `halloy-export.toml` next to your wisirc config, or to the file you name: `/export halloy ~/halloy-servers.toml`. It includes nick, username, realname, host, port, TLS, invalid certificates, channels, the server password and SASL PLAIN; servers you disabled get `autoconnect = false`. Connections made with `/connect` and never saved are left out. The file holds your passwords in plain text, so it is created readable only by you, and wisirc never overwrites an existing file (including Halloy's own config): copy its `[servers.*]` tables into Halloy's `config.toml` yourself.
 
@@ -144,6 +144,21 @@ To go the other way, `/export halloy` (alias `/exportar`) writes your saved serv
 ## ⚙️ Configuration file
 
 The file lives at `~/.config/wisirc/config.toml` (respects `$XDG_CONFIG_HOME`). To use a different one: `wisirc --config <path>`. The first run creates it without servers, with commented examples; the servers you add go to `servers.toml`.
+
+<a id="config-copy"></a>
+
+**Starting from a config you already have:** `wisirc --config-copy <path>` copies a config into wisirc's place (the default one, or the one you pass with `--config`) and starts with it, so there is nothing to set up. `<path>` can be:
+
+- a wisirc config directory, or its `config.toml`: `config.toml`, `servers.toml` and `prefs.toml` (language, theme, identity, colors, disabled servers) are copied as they are. Handy to move wisirc to another machine or user.
+- a Halloy `config.toml`, or Halloy's config directory: its servers are imported (same rules as [Coming from Halloy](#coming-from-halloy)) into `servers.toml`, next to a `config.toml` without servers.
+
+```sh
+wisirc --config-copy ~/backup/wisirc                    # a wisirc config directory
+wisirc --config-copy ~/.config/halloy/config.toml       # your Halloy servers
+wisirc --config /tmp/try/config.toml --config-copy ~/.config/wisirc   # try a copy without touching yours
+```
+
+It never replaces anything: if the destination already has a `config.toml`, `servers.toml` or `prefs.toml`, wisirc says so and does not start; move it away or pick another one with `--config`. The copies are readable only by you, since they can hold passwords. Logs are not copied. Once copied, later runs only need plain `wisirc`; with the setup skipped, change the language, theme or identity from ≡.
 
 ```toml
 [servers.examplenet]
