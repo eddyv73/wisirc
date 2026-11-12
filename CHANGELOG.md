@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.3
+
+- Fixed: ≡ → Edit config did nothing (the screen just flickered) when
+  neither `$VISUAL` nor `$EDITOR` was set and `vi` was not installed. wisirc
+  now opens the first of `nano`, `vim`, `vi` or `nvim` it finds, and if
+  there is no editor (or the one in `$EDITOR` is missing) the status bar
+  says so instead of hiding the error behind the dashboard.
+
 ## v0.4.2
 
 - `wisirc --config-copy <path>` starts with a copy of a config you already

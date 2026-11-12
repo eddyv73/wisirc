@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -90,5 +91,58 @@ func TestNickMenuTitledAndBelow(t *testing.T) {
 	}
 	if v := h.view(); !strings.Contains(strings.Split(v, "\n")[y], "ana") {
 		t.Fatalf("nick hidden:\n%s", v)
+	}
+}
+
+func TestEditorFor(t *testing.T) {
+	env := func(m map[string]string) func(string) string { return func(k string) string { return m[k] } }
+	have := func(names ...string) func(string) (string, error) {
+		return func(n string) (string, error) {
+			for _, h := range names {
+				if h == n {
+					return "/usr/bin/" + n, nil
+				}
+			}
+			return "", errors.New("not found")
+		}
+	}
+	cases := []struct {
+		name string
+		env  map[string]string
+		have []string
+		want string
+		ok   bool
+	}{
+		{"VISUAL wins", map[string]string{"VISUAL": "code -w", "EDITOR": "vim"}, []string{"code", "vim"}, "code -w", true},
+		{"EDITOR", map[string]string{"EDITOR": "micro"}, []string{"micro"}, "micro", true},
+		{"nothing set, no vi: nano", nil, []string{"nano", "vim", "nvim"}, "nano", true},
+		{"nothing set, only nvim", nil, []string{"nvim"}, "nvim", true},
+		{"no editor at all", nil, nil, "", false},
+		{"EDITOR not installed", map[string]string{"EDITOR": "emacs"}, []string{"nano"}, "emacs", false},
+	}
+	for _, c := range cases {
+		got, ok := editorFor(env(c.env), have(c.have...))
+		if strings.Join(got, " ") != c.want || ok != c.ok {
+			t.Errorf("%s: %v %v, want %q %v", c.name, got, ok, c.want, c.ok)
+		}
+	}
+}
+
+// Without an editor, Edit config says so in the status bar instead of
+// flashing the screen, and the error line is kept too.
+func TestEditConfigWithoutEditor(t *testing.T) {
+	t.Setenv("VISUAL", "")
+	t.Setenv("EDITOR", "")
+	t.Setenv("PATH", t.TempDir())
+	h := newHarness(t)
+	h.m.dash = &dashScreen{}
+	if cmd := h.m.runMenu(GlobalMenu(), ActConfig); cmd != nil {
+		t.Fatal("no editor: nothing should run")
+	}
+	if !strings.Contains(h.view(), "No text editor found") {
+		t.Errorf("status bar should explain:\n%s", h.view())
+	}
+	if !strings.Contains(h.shown(), "EDITOR=nano") {
+		t.Errorf("error line missing:\n%s", h.shown())
 	}
 }

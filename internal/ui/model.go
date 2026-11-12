@@ -418,7 +418,8 @@ func (m *Model) errorLine(text string) {
 
 func (m *Model) reloadConfig(execErr error) {
 	if execErr != nil {
-		m.errorLine("editor: " + execErr.Error())
+		m.flash = "editor: " + execErr.Error()
+		m.errorLine(m.flash)
 	}
 	cfg, warns, err := config.Load(m.d.CfgPath)
 	if err != nil {

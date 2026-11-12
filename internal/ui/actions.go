@@ -146,13 +146,41 @@ func (m *Model) showLogs(ref state.BufRef) {
 	m.overlay = &textOverlay{title: i18n.T("Logs of %s (Esc to close)", name), lines: lines}
 }
 
-func (m *Model) editConfig() tea.Cmd {
-	editor := strings.Fields(os.Getenv("VISUAL"))
-	if len(editor) == 0 {
-		editor = strings.Fields(os.Getenv("EDITOR"))
+// fallbackEditors are tried, in order, when neither $VISUAL nor $EDITOR is
+// set. nano goes first: it shows its keys on screen, and some systems ship
+// without vi.
+var fallbackEditors = []string{"nano", "vim", "vi", "nvim"}
+
+// editorFor returns the editor command for Edit config: $VISUAL, then
+// $EDITOR, then the first installed fallback. ok is false when the chosen
+// editor is not installed (or there is none); the command then names it.
+func editorFor(getenv func(string) string, look func(string) (string, error)) (editor []string, ok bool) {
+	for _, v := range []string{"VISUAL", "EDITOR"} {
+		if e := strings.Fields(getenv(v)); len(e) > 0 {
+			_, err := look(e[0])
+			return e, err == nil
+		}
 	}
-	if len(editor) == 0 {
-		editor = []string{"vi"}
+	for _, e := range fallbackEditors {
+		if _, err := look(e); err == nil {
+			return []string{e}, true
+		}
+	}
+	return nil, false
+}
+
+func (m *Model) editConfig() tea.Cmd {
+	editor, ok := editorFor(os.Getenv, exec.LookPath)
+	if !ok {
+		// say it in the status bar too: the error line alone is easy to miss
+		// (the dashboard covers the buffer it goes to)
+		if len(editor) == 0 {
+			m.flash = i18n.T("No text editor found: set $EDITOR (for example EDITOR=nano)")
+		} else {
+			m.flash = i18n.T("Editor %s not found: check $VISUAL and $EDITOR", editor[0])
+		}
+		m.errorLine(m.flash)
+		return nil
 	}
 	cmd := exec.Command(editor[0], append(editor[1:], m.d.CfgPath)...)
 	return tea.ExecProcess(cmd, func(err error) tea.Msg { return configEditedMsg{err: err} })
